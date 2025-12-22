@@ -22,17 +22,8 @@ fi
 
 COMMIT_MSG="$1"
 
-# Run tests before deploying
-echo -e "${BLUE}🧪 Running backend tests...${NC}"
-cd api
-source venv/bin/activate
-pytest
-if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Backend tests failed! Aborting deployment.${NC}"
-    exit 1
-fi
-deactivate
-cd ..
+# Note: Backend tests are run in the separate backend repository (devis_generator_api)
+# This script only handles frontend deployment
 
 echo -e "${BLUE}🧪 Running frontend tests...${NC}"
 pnpm test --passWithNoTests
