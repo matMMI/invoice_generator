@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Currency } from "@/lib/api/quotes";
 
 export const quoteItemSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -9,7 +10,7 @@ export const quoteItemSchema = z.object({
 
 export const quoteFormSchema = z.object({
   client_id: z.string().min(1, "Please select a client"),
-  currency: z.enum(["EUR", "USD", "GBP", "CHF", "CAD"]),
+  currency: z.nativeEnum(Currency),
   tax_rate: z.number().min(0).max(100),
   notes: z.string().optional(),
   payment_terms: z.string().optional(),
