@@ -1,17 +1,26 @@
 {
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/auth/:path*",
-      "destination": "/api/auth/:path*"
+      "src": "frontend/package.json",
+      "use": "@vercel/next"
     },
     {
-      "source": "/api/:path*",
-      "destination": "/api/index.py"
+      "src": "api/index.py",
+      "use": "@vercel/python"
     }
   ],
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 10
+  "routes": [
+    {
+      "src": "/api/auth/(.*)",
+      "dest": "/frontend/api/auth/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
     }
-  }
+  ]
 }
