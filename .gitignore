@@ -20,7 +20,7 @@ downloads/
 eggs/
 .eggs/
 vercel.env
-lib/
+!lib/
 !frontend/lib/
 lib64/
 parts/
