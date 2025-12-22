@@ -1,33 +1,13 @@
 {
   "functions": {
-    "api/**": {
-      "excludeFiles": "{.next,.git,node_modules}/**"
+    "api/index.py": {
+      "runtime": "python3.9"
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/clients",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api/clients/:path*",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api/quotes",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api/quotes/:path*",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api/docs",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api/openapi.json",
-      "destination": "/api/index.py"
+      "src": "/api/(.*)",
+      "dest": "/api/index.py"
     }
   ]
 }
