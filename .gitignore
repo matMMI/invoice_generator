@@ -19,6 +19,7 @@ dist/
 downloads/
 eggs/
 .eggs/
+vercel.env
 lib/
 !frontend/lib/
 lib64/
