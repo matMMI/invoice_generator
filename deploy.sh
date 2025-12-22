@@ -31,6 +31,16 @@ if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Backend tests failed! Aborting deployment.${NC}"
     exit 1
 fi
+deactivate
+cd ..
+
+echo -e "${BLUE}🧪 Running frontend tests...${NC}"
+cd frontend
+pnpm test --passWithNoTests
+if [ $? -ne 0 ]; then
+    echo -e "${RED}❌ Frontend tests failed! Aborting deployment.${NC}"
+    exit 1
+fi
 cd ..
 
 echo -e "${BLUE}🏗️  Building frontend...${NC}"
