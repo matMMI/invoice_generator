@@ -56,20 +56,37 @@ API Docs: http://localhost:8000/docs
 
 ## Project Structure
 
+**⚠️ Note: This project uses a microservices architecture with two separate deployments**
+
 ```
-devis_generator/
-├── api/                    # FastAPI Backend
-│   ├── models/            # SQLModel database models
-│   ├── routers/           # API endpoints
-│   ├── services/          # Business logic
-│   ├── core/              # Config, security
-│   └── db/                # Database session, migrations
-├── frontend/              # Next.js Frontend
+invoice-generator/
+├── Frontend (Next.js) - Deployed separately
 │   ├── app/              # Next.js App Router
-│   ├── components/       # React components
-│   └── lib/              # Utilities, API client
-└── .specify/             # Spec-kit documentation
+│   │   ├── auth/        # Better Auth routes (/auth/*)
+│   │   ├── clients/     # Client management UI
+│   │   └── quotes/      # Quote management UI
+│   ├── components/      # React components
+│   └── lib/             # API client, utilities
+│
+└── Backend (FastAPI) - Deployed separately
+    ├── models/          # SQLModel database models
+    ├── routers/         # API endpoints (/api/*)
+    ├── services/        # Business logic
+    ├── core/            # Config, security
+    └── db/              # Database session, migrations
 ```
+
+**Production URLs:**
+
+- Frontend: `https://invoice-generator-frontend-three.vercel.app`
+- Backend API: `https://invoice-generator-api.vercel.app`
+- API Docs: `https://invoice-generator-api.vercel.app/api/docs`
+
+**Local Development:**
+
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000`
+- API Docs: `http://localhost:8000/api/docs`
 
 ## Tech Stack
 
