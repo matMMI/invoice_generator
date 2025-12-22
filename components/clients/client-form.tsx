@@ -8,7 +8,6 @@ interface ClientFormProps {
   onSubmit: (data: ClientCreate | ClientUpdate) => Promise<void>;
   onCancel: () => void;
 }
-
 export function ClientForm({
   initialData,
   onSubmit,
