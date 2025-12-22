@@ -3,10 +3,21 @@
     "api/**": {
       "excludeFiles": "{.next,.git,node_modules}/**"
     }
-  },
   "rewrites": [
     {
-      "source": "/api/(?!auth)(.*)",
+      "source": "/api/clients/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api/quotes/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api/docs",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api/openapi.json",
       "destination": "/api/index.py"
     }
   ]
