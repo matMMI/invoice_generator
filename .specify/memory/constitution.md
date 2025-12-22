@@ -96,7 +96,7 @@ Code MUST be organized for maintainability and reusability:
 - **Database**: Neon PostgreSQL (serverless)
 - **ORM**: SQLModel (combines SQLAlchemy + Pydantic)
 - **File Storage**: Vercel Blob
-- **Authentication**: NextAuth.js (OAuth providers + credentials)
+- **Authentication**: Better Auth (https://www.better-auth.com/) - TypeScript-first auth library
 - **PDF Generation**:
   - Backend: ReportLab or WeasyPrint
   - Frontend: react-pdf (for preview)
