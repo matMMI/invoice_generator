@@ -3,6 +3,7 @@
     "api/**": {
       "excludeFiles": "{.next,.git,node_modules}/**"
     }
+  },
   "rewrites": [
     {
       "source": "/api/clients/:path*",
