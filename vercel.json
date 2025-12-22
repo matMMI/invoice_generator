@@ -1,7 +1,7 @@
 {
   "buildCommand": "cd frontend && npm run build",
   "devCommand": "cd frontend && npm run dev",
-  "installCommand": "npm install --prefix frontend && pip install -r api/requirements.txt",
+  "installCommand": "pnpm install --prefix frontend && pip install -r api/requirements.txt",
   "framework": "nextjs",
   "rewrites": [
     {

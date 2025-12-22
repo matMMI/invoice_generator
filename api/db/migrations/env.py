@@ -8,7 +8,7 @@ from sqlalchemy import pool
 from alembic import context
 
 # Add parent directory to path to import api modules
-sys.path.append(str(Path(__file__).parents[2]))
+sys.path.append(str(Path(__file__).parents[3]))
 
 from api.core.config import settings
 from api.models import User, Client, Quote, QuoteItem

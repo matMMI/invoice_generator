@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from decimal import Decimal
-from uuid import UUID, uuid4
+from uuid import uuid4
 from datetime import datetime, timezone
 from api.models.enums import Currency, QuoteStatus, DiscountType
 
@@ -10,10 +10,10 @@ class Quote(SQLModel, table=True):
     
     __tablename__ = "quote"  # type: ignore
     
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     quote_number: str = Field(unique=True, index=True, max_length=50)
-    user_id: UUID = Field(foreign_key="user.id", index=True)
-    client_id: UUID = Field(foreign_key="client.id", index=True)
+    user_id: str = Field(foreign_key="user.id", index=True)
+    client_id: str = Field(foreign_key="client.id", index=True)
     currency: Currency = Field(default=Currency.EUR)
     status: QuoteStatus = Field(default=QuoteStatus.DRAFT, index=True)
     
@@ -44,8 +44,8 @@ class QuoteItem(SQLModel, table=True):
     
     __tablename__ = "quote_item"  # type: ignore
     
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
-    quote_id: UUID = Field(foreign_key="quote.id", index=True, ondelete="CASCADE")
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    quote_id: str = Field(foreign_key="quote.id", index=True, ondelete="CASCADE")
     description: str
     quantity: Decimal = Field(max_digits=10, decimal_places=2)
     unit_price: Decimal = Field(max_digits=12, decimal_places=2)
