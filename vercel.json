@@ -6,7 +6,15 @@
   },
   "rewrites": [
     {
+      "source": "/api/clients",
+      "destination": "/api/index.py"
+    },
+    {
       "source": "/api/clients/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api/quotes",
       "destination": "/api/index.py"
     },
     {
