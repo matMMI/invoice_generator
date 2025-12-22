@@ -1,16 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from api.core.config import settings
 from api.routers import clients, quotes
-
 app = FastAPI(
     title="Devis Generator API",
     version="1.0.0",
     description="API for the Invoice/Devis Generator application",
 )
-
-# Set all CORS enabled origins
 if settings.cors_origins:
     app.add_middleware(
         CORSMiddleware,
@@ -19,15 +15,11 @@ if settings.cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-# Register routers
 app.include_router(clients.router, prefix="/api", tags=["clients"])
 app.include_router(quotes.router, prefix="/api", tags=["quotes"])
-
 @app.get("/")
 async def root():
     return {"message": "Hello World", "environment": settings.environment}
-
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
