@@ -19,9 +19,5 @@
       "src": "/(.*)",
       "dest": "frontend/$1"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "BETTER_AUTH_SECRET": "@better_auth_secret"
-  }
+  ]
 }
