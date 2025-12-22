@@ -6,12 +6,7 @@
     },
     {
       "source": "/api/:path*",
-      "destination": "/api/main.py"
+      "destination": "/api/index.py"
     }
-  ],
-  "functions": {
-    "api/main.py": {
-      "maxDuration": 10
-    }
-  }
+  ]
 }
