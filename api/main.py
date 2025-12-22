@@ -6,6 +6,8 @@ app = FastAPI(
     title="Devis Generator API",
     version="1.0.0",
     description="API for the Invoice/Devis Generator application",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
 )
 if settings.cors_origins:
     app.add_middleware(
