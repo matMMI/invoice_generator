@@ -35,22 +35,18 @@ deactivate
 cd ..
 
 echo -e "${BLUE}🧪 Running frontend tests...${NC}"
-cd frontend
 pnpm test --passWithNoTests
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Frontend tests failed! Aborting deployment.${NC}"
     exit 1
 fi
-cd ..
 
 echo -e "${BLUE}🏗️  Building frontend...${NC}"
-cd frontend
 pnpm run build
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Frontend build failed! Aborting deployment.${NC}"
     exit 1
 fi
-cd ..
 
 # Git operations
 echo -e "${BLUE}📦 Adding changes to git...${NC}"
