@@ -23,7 +23,7 @@ interface OverviewProps {
 const chartConfig = {
   total: {
     label: "Chiffre d'affaires",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--primary))",
   },
 } satisfies ChartConfig;
 
@@ -86,7 +86,7 @@ export function Overview({ data, loading }: OverviewProps) {
             />
             <Bar
               dataKey="total"
-              fill="var(--color-total)"
+              fill="hsl(var(--primary))"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

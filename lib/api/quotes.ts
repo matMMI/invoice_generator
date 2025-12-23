@@ -11,6 +11,7 @@ export enum Currency {
 export enum QuoteStatus {
   DRAFT = "Draft",
   SENT = "Sent",
+  SIGNED = "Signed",
   ACCEPTED = "Accepted",
   REJECTED = "Rejected",
 }

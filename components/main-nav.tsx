@@ -26,14 +26,14 @@ export function MainNav({
       active: pathname === "/",
     },
     {
-      href: "/clients",
-      label: "Clients",
-      active: pathname.startsWith("/clients"),
-    },
-    {
       href: "/quotes",
       label: "Devis",
       active: pathname.startsWith("/quotes"),
+    },
+    {
+      href: "/clients",
+      label: "Clients",
+      active: pathname.startsWith("/clients"),
     },
   ];
 

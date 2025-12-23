@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -25,6 +26,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   ArrowLeft,
   Edit,
   Trash2,
@@ -33,6 +42,9 @@ import {
   Calendar,
   User,
   Hash,
+  Share2,
+  Copy,
+  Check,
 } from "lucide-react";
 import {
   Quote,
@@ -45,6 +57,8 @@ import { getClient, Client } from "@/lib/api/clients";
 import { generateQuotePdf } from "@/lib/api/pdf";
 import { toast } from "sonner";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 export default function QuoteDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -56,6 +70,10 @@ export default function QuoteDetailPage() {
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -115,6 +133,42 @@ export default function QuoteDetailPage() {
     }
   };
 
+  const handleShare = async () => {
+    if (!quote) return;
+    setSharing(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/quotes/${quote.id}/share`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error("Échec de la génération du lien");
+      }
+      const data = await res.json();
+      // Build full URL
+      const fullUrl = `${window.location.origin}${data.share_url}`;
+      setShareUrl(fullUrl);
+      setShareDialogOpen(true);
+    } catch (e: any) {
+      toast.error(e.message || "Échec du partage");
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const handleCopyUrl = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      toast.success("Lien copié !");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Impossible de copier le lien");
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString("fr-FR", {
       style: "currency",
@@ -127,7 +181,9 @@ export default function QuoteDetailPage() {
       case QuoteStatus.DRAFT:
         return "secondary";
       case QuoteStatus.SENT:
-        return "default";
+        return "warning";
+      case QuoteStatus.SIGNED:
+        return "info";
       case QuoteStatus.ACCEPTED:
         return "default";
       case QuoteStatus.REJECTED:
@@ -296,10 +352,26 @@ export default function QuoteDetailPage() {
                 <SelectContent>
                   <SelectItem value={QuoteStatus.DRAFT}>Brouillon</SelectItem>
                   <SelectItem value={QuoteStatus.SENT}>Envoyé</SelectItem>
+                  <SelectItem value={QuoteStatus.SIGNED}>Signé</SelectItem>
                   <SelectItem value={QuoteStatus.ACCEPTED}>Accepté</SelectItem>
                   <SelectItem value={QuoteStatus.REJECTED}>Refusé</SelectItem>
                 </SelectContent>
               </Select>
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  onClick={handleShare}
+                  disabled={sharing || quote.status === QuoteStatus.SIGNED}
+                  className="w-full"
+                >
+                  {sharing ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Share2 className="mr-2 h-4 w-4" />
+                  )}
+                  {sharing ? "Génération..." : "Faire signer le devis"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -356,6 +428,35 @@ export default function QuoteDetailPage() {
           </Card>
         </div>
       </div>
+
+      {/* Share Dialog */}
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Partager ce devis pour signature</DialogTitle>
+            <DialogDescription>
+              Envoyez ce lien à votre client pour qu&apos;il puisse consulter et
+              signer électroniquement ce devis.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex gap-2">
+              <Input value={shareUrl || ""} readOnly className="flex-1" />
+              <Button onClick={handleCopyUrl} variant="outline" size="icon">
+                {copied ? (
+                  <Check className="h-4 w-4 text-primary" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Ce lien expire dans 30 jours. Le statut du devis passera à
+              &quot;Envoyé&quot;.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

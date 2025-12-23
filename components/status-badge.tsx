@@ -9,6 +9,7 @@ interface StatusBadgeProps {
 const statusLabels: Record<string, string> = {
   Draft: "Brouillon",
   Sent: "Envoyé",
+  Signed: "Signé",
   Accepted: "Accepté",
   Rejected: "Refusé",
 };
@@ -22,6 +23,8 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       case "Draft":
         return "secondary";
       case "Sent":
+        return "warning";
+      case "Signed":
         return "info";
       case "Accepted":
         return "success";

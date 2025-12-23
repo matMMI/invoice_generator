@@ -79,10 +79,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-8 max-w-5xl mx-auto py-6"
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid gap-6 p-6 border rounded-lg bg-card">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
@@ -125,7 +122,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
         </div>
       </div>
 
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end gap-4 mt-4">
         <Button variant="outline" type="button" onClick={() => router.back()}>
           Annuler
         </Button>

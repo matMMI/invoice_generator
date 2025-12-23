@@ -34,7 +34,11 @@ const chartConfig = {
   },
   [QuoteStatus.SENT]: {
     label: "Envoyé",
-    color: "hsl(221 83% 53%)",
+    color: "hsl(45 93% 47%)", // Amber/Oracle matching warning variant
+  },
+  [QuoteStatus.SIGNED]: {
+    label: "Signé",
+    color: "hsl(221 83% 53%)", // Blue/Info matching info variant
   },
   [QuoteStatus.DRAFT]: {
     label: "Brouillon",
@@ -91,7 +95,7 @@ export function StatusDistribution({ data, loading }: StatusDistributionProps) {
         >
           <PieChart>
             <ChartTooltip
-              content={<ChartTooltipContent nameKey="count" hideLabel />}
+              content={<ChartTooltipContent nameKey="status" hideLabel />}
             />
             <Pie
               data={chartData}
