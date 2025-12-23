@@ -157,9 +157,9 @@ export default function QuoteDetailPage() {
   }
 
   return (
-    <div className="container py-10 max-w-5xl">
+    <div className="container mx-auto py-10 max-w-5xl px-4 sm:px-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
@@ -174,7 +174,7 @@ export default function QuoteDetailPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link href={`/quotes/${quote.id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
@@ -233,7 +233,7 @@ export default function QuoteDetailPage() {
               <CardTitle>Line Items</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="border rounded-lg overflow-hidden">
+              <div className="border rounded-lg overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>

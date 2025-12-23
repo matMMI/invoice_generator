@@ -7,19 +7,17 @@ import { UserNav } from "@/components/user-nav";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
 
   const routes = [
     {
@@ -44,35 +42,28 @@ export function MainNav({
       <div className="flex h-16 items-center px-4">
         {/* Mobile Menu Trigger */}
         <div className="md:hidden mr-2">
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
               </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle>Navigation</SheetTitle>
-              </SheetHeader>
-              <div className="flex flex-col space-y-4 mt-8">
-                {routes.map((route) => (
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              {routes.map((route) => (
+                <DropdownMenuItem key={route.href} asChild>
                   <Link
-                    key={route.href}
                     href={route.href}
-                    onClick={() => setIsOpen(false)}
                     className={cn(
-                      "text-sm font-medium transition-colors hover:text-primary",
-                      route.active
-                        ? "text-black dark:text-white"
-                        : "text-muted-foreground"
+                      "w-full cursor-pointer",
+                      route.active ? "font-bold" : ""
                     )}
                   >
                     {route.label}
                   </Link>
-                ))}
-              </div>
-            </SheetContent>
-          </Sheet>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="font-bold text-xl mr-8">DevisGen</div>
