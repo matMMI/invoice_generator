@@ -63,10 +63,10 @@ export default function ClientsPage() {
     try {
       await createClient(data);
       setShowForm(false);
-      toast.success("Client created successfully");
+      toast.success("Client créé avec succès");
       fetchClients(search);
     } catch (err: any) {
-      toast.error(err.message || "Failed to create client");
+      toast.error(err.message || "Échec de la création du client");
     }
   };
 
@@ -75,10 +75,10 @@ export default function ClientsPage() {
       try {
         await updateClient(editingClient.id, data);
         setEditingClient(null);
-        toast.success("Client updated successfully");
+        toast.success("Client mis à jour avec succès");
         fetchClients(search);
       } catch (err: any) {
-        toast.error(err.message || "Failed to update client");
+        toast.error(err.message || "Échec de la mise à jour du client");
       }
     }
   };
@@ -86,10 +86,10 @@ export default function ClientsPage() {
   const handleDelete = async (id: string) => {
     try {
       await deleteClient(id);
-      toast.success("Client deleted successfully");
+      toast.success("Client supprimé avec succès");
       fetchClients(search, currentPage);
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete client");
+      toast.error(err.message || "Échec de la suppression du client");
     }
   };
 
@@ -97,7 +97,7 @@ export default function ClientsPage() {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <h1 className="text-2xl font-bold mb-6">
-          {editingClient ? "Edit Client" : "New Client"}
+          {editingClient ? "Modifier le Client" : "Nouveau Client"}
         </h1>
         <ClientForm
           initialData={
@@ -122,15 +122,15 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="container py-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="page-container">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Clients</h1>
-          <p className="text-muted-foreground">Manage your client database.</p>
+          <p className="text-muted-foreground">Gérez votre base de clients.</p>
         </div>
         <Button onClick={() => setShowForm(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          New Client
+          Nouveau Client
         </Button>
       </div>
 
@@ -140,14 +140,14 @@ export default function ClientsPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search by name or email..."
+              placeholder="Rechercher par nom ou email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
             />
           </div>
           <Button type="submit" variant="secondary">
-            Search
+            Rechercher
           </Button>
           {search && (
             <Button
@@ -189,12 +189,12 @@ export default function ClientsPage() {
       ) : clients.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 border rounded-lg bg-muted/10">
           <Users className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium">No clients yet</h3>
+          <h3 className="text-lg font-medium">Aucun client</h3>
           <p className="text-muted-foreground mb-6">
-            Add your first client to get started.
+            Ajoutez votre premier client pour commencer.
           </p>
           <Button variant="outline" onClick={() => setShowForm(true)}>
-            Create your first client
+            Créer votre premier client
           </Button>
         </div>
       ) : (
@@ -217,17 +217,17 @@ export default function ClientsPage() {
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           >
-            Previous
+            Précédent
           </Button>
           <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
+            Page {currentPage} sur {totalPages}
           </span>
           <Button
             variant="outline"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
           >
-            Next
+            Suivant
           </Button>
         </div>
       )}

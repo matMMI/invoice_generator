@@ -81,9 +81,9 @@ export default function QuoteDetailPage() {
     try {
       const updated = await updateQuote(quote.id, { status: newStatus });
       setQuote(updated);
-      toast.success(`Status updated to ${newStatus}`);
+      toast.success(`Statut mis à jour : ${newStatus}`);
     } catch (e) {
-      toast.error("Failed to update status");
+      toast.error("Échec de la mise à jour du statut");
     } finally {
       setStatusUpdating(false);
     }
@@ -94,9 +94,9 @@ export default function QuoteDetailPage() {
     setGeneratingPdf(true);
     try {
       await generateQuotePdf(quote.id);
-      toast.success("PDF downloaded!");
+      toast.success("PDF téléchargé !");
     } catch (e: any) {
-      toast.error(e.message || "Failed to generate PDF");
+      toast.error(e.message || "Échec de la génération du PDF");
     } finally {
       setGeneratingPdf(false);
     }
@@ -107,10 +107,10 @@ export default function QuoteDetailPage() {
     setDeleting(true);
     try {
       await deleteQuote(quote.id);
-      toast.success("Quote deleted");
+      toast.success("Devis supprimé");
       router.push("/quotes");
     } catch (e) {
-      toast.error("Failed to delete quote");
+      toast.error("Échec de la suppression du devis");
       setDeleting(false);
     }
   };
@@ -157,7 +157,7 @@ export default function QuoteDetailPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 max-w-5xl px-4 sm:px-6">
+    <div className="page-container">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div className="flex items-center gap-4">

@@ -36,7 +36,7 @@ export function QuoteTotals({
     <Card className="w-full md:w-1/3 ml-auto">
       <CardContent className="pt-6 space-y-4">
         <div className="flex justify-between items-center text-sm">
-          <span className="text-muted-foreground">Subtotal</span>
+          <span className="text-muted-foreground">Sous-total</span>
           <span className="font-medium">{formatMoney(subtotal)}</span>
         </div>
 
@@ -45,7 +45,7 @@ export function QuoteTotals({
             htmlFor="tax-rate"
             className="text-sm text-muted-foreground whitespace-nowrap"
           >
-            Tax Rate (%)
+            Taux TVA (%)
           </Label>
           <Input
             id="tax-rate"
@@ -60,7 +60,7 @@ export function QuoteTotals({
         </div>
 
         <div className="flex justify-between items-center text-sm">
-          <span className="text-muted-foreground">Tax Amount</span>
+          <span className="text-muted-foreground">Montant TVA</span>
           <span>{formatMoney(taxAmount)}</span>
         </div>
 

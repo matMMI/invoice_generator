@@ -69,8 +69,10 @@ export function LineItemsEditor({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[40%]">Description</TableHead>
-              <TableHead className="w-[15%] text-right">Quantity</TableHead>
-              <TableHead className="w-[20%] text-right">Unit Price</TableHead>
+              <TableHead className="w-[15%] text-right">Quantité</TableHead>
+              <TableHead className="w-[20%] text-right">
+                Prix Unitaire
+              </TableHead>
               <TableHead className="w-[20%] text-right">Total</TableHead>
               <TableHead className="w-[5%]"></TableHead>
             </TableRow>
@@ -84,7 +86,7 @@ export function LineItemsEditor({
                     onChange={(e) =>
                       handleChange(index, "description", e.target.value)
                     }
-                    placeholder="Item description"
+                    placeholder="Description de l'article"
                   />
                 </TableCell>
                 <TableCell className="text-right">
@@ -141,7 +143,7 @@ export function LineItemsEditor({
         className="gap-2"
       >
         <Plus className="h-4 w-4" />
-        Add Line Item
+        Ajouter une ligne
       </Button>
     </div>
   );

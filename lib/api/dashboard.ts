@@ -26,6 +26,13 @@ export interface MonthlyRevenue {
   total: number;
 }
 
+export interface FiscalRevenue {
+  year_to_date: number;
+  quarter_to_date: number;
+  current_year: number;
+  current_quarter: number;
+}
+
 export interface DashboardMetrics {
   total_quotes: number;
   total_clients: number;
@@ -33,6 +40,7 @@ export interface DashboardMetrics {
   totals_by_currency: CurrencyTotal[];
   recent_quotes: RecentQuote[];
   monthly_revenue: MonthlyRevenue[];
+  fiscal_revenue: FiscalRevenue;
 }
 
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {

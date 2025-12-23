@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { Overview } from "@/components/dashboard/overview";
 import { StatusDistribution } from "@/components/dashboard/status-distribution";
+import { FiscalStatus } from "@/components/dashboard/fiscal-status";
 
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -46,7 +47,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="container py-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="page-container">
         <div className="flex items-center justify-between mb-8">
           <div>
             <Skeleton className="h-9 w-48 mb-2" />
@@ -76,82 +77,108 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container py-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="page-container">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
           <p className="text-muted-foreground">
-            Overview of your quotes and clients.
+            Aperçu de vos devis et clients.
           </p>
         </div>
         <Link href="/quotes/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            New Quote
+            Nouveau Devis
           </Button>
         </Link>
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <Card>
+      <div
+        className="grid gap-4 mb-8"
+        style={{
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+        }}
+      >
+        <Card className="overflow-hidden border-l-4 border-l-blue-500 dark:border-l-blue-400 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Quotes</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Devis
+            </CardTitle>
+            <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+              <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
               {metrics?.total_quotes || 0}
             </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Tous statuts confondus
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="overflow-hidden border-l-4 border-l-purple-500 dark:border-l-purple-400 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Clients
+            </CardTitle>
+            <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+              <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
               {metrics?.total_clients || 0}
             </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Dans votre base
+            </p>
           </CardContent>
         </Card>
 
         {metrics?.totals_by_currency.map((ct) => (
-          <Card key={ct.currency}>
+          <Card
+            key={ct.currency}
+            className="overflow-hidden border-l-4 border-l-green-500 dark:border-l-green-400 hover:shadow-lg transition-shadow"
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Accepted ({ct.currency})
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Accepté ({ct.currency})
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {formatCurrency(ct.total, ct.currency)}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Chiffre d'affaires
+              </p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Charts */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mb-8">
-        <div className="col-span-4">
-          <Overview data={metrics?.monthly_revenue || []} />
-        </div>
-        <div className="col-span-3">
-          <StatusDistribution data={metrics?.quotes_by_status || []} />
-        </div>
+      {/* Charts & Fiscal Status */}
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-8">
+        <Overview data={metrics?.monthly_revenue || []} />
+        <StatusDistribution data={metrics?.quotes_by_status || []} />
+        {metrics?.fiscal_revenue && (
+          <FiscalStatus data={metrics.fiscal_revenue} />
+        )}
       </div>
 
       {/* Recent Quotes */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Recent Quotes</CardTitle>
+          <CardTitle>Devis Récents</CardTitle>
           <Link href="/quotes">
             <Button variant="ghost" size="sm">
-              View all
+              Voir tout
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
@@ -160,11 +187,11 @@ export default function DashboardPage() {
           {metrics?.recent_quotes.length === 0 ? (
             <div className="text-center py-6">
               <p className="text-muted-foreground text-sm mb-4">
-                No quotes yet
+                Aucun devis pour le moment
               </p>
               <Link href="/quotes/create">
                 <Button variant="outline" size="sm">
-                  Create your first quote
+                  Créer votre premier devis
                 </Button>
               </Link>
             </div>

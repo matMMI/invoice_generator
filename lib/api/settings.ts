@@ -12,6 +12,10 @@ export interface Settings {
   company_website: string | null;
   company_logo_url: string | null;
   pdf_footer_text: string | null;
+  company_siret: string | null;
+  is_vat_applicable: boolean;
+  vat_exemption_text: string;
+  late_payment_penalties: string;
   default_currency: string;
   default_tax_rate: number;
 }
@@ -24,6 +28,10 @@ export interface SettingsUpdate {
   company_website?: string;
   company_logo_url?: string;
   pdf_footer_text?: string;
+  company_siret?: string;
+  is_vat_applicable?: boolean;
+  vat_exemption_text?: string;
+  late_payment_penalties?: string;
   default_currency: string;
   default_tax_rate: number;
 }

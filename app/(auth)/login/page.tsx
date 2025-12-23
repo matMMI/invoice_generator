@@ -35,17 +35,8 @@ export default function LoginPage() {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-3xl font-bold tracking-tight text-foreground">
-          Sign in to your account
+          Connexion à votre compte
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Or{" "}
-          <Link
-            href="/signup"
-            className="font-medium text-primary hover:text-primary/80 transition-colors"
-          >
-            create a new account
-          </Link>
-        </p>
       </div>
 
       {error && (
@@ -85,7 +76,7 @@ export default function LoginPage() {
             htmlFor="email"
             className="block text-sm font-medium text-foreground mb-1.5"
           >
-            Email
+            E-mail
           </label>
           <input
             id="email"
@@ -101,7 +92,7 @@ export default function LoginPage() {
             htmlFor="password"
             className="block text-sm font-medium text-foreground mb-1.5"
           >
-            Password
+            Mot de passe
           </label>
           <input
             id="password"
@@ -119,7 +110,7 @@ export default function LoginPage() {
         disabled={loading}
         className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed transition-all"
       >
-        {loading ? "Signing in..." : "Sign in"}
+        {loading ? "Connexion..." : "Se connecter"}
       </button>
     </div>
   );

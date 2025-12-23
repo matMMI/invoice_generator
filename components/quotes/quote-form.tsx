@@ -62,17 +62,18 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
     try {
       if (isEdit && initialData) {
         await updateQuote(initialData.id, data);
-        toast.success("Quote updated successfully");
+        toast.success("Devis mis à jour avec succès");
         router.push(`/quotes/${initialData.id}`);
       } else {
         await createQuote(data);
-        toast.success("Quote created successfully");
+        toast.success("Devis créé avec succès");
         router.push("/quotes");
       }
       router.refresh();
     } catch (error: any) {
       toast.error(
-        error.message || `Failed to ${isEdit ? "update" : "create"} quote`
+        error.message ||
+          `Échec de la ${isEdit ? "mise à jour" : "création"} du devis`
       );
     }
   };
@@ -97,7 +98,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
         </div>
 
         <div className="space-y-4">
-          <Label>Line Items *</Label>
+          <Label>Facturation *</Label>
           <LineItemsEditor
             items={items}
             onChange={(newItems) => setValue("items", newItems)}
@@ -119,18 +120,18 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
           <Label>Notes</Label>
           <Textarea
             {...register("notes")}
-            placeholder="Additional notes for the client..."
+            placeholder="Notes supplémentaires pour le client..."
           />
         </div>
       </div>
 
       <div className="flex justify-end gap-4">
         <Button variant="outline" type="button" onClick={() => router.back()}>
-          Cancel
+          Annuler
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isEdit ? "Update Quote" : "Create Quote"}
+          {isEdit ? "Mettre à jour" : "Créer le Devis"}
         </Button>
       </div>
     </form>

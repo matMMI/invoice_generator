@@ -25,23 +25,23 @@ interface StatusDistributionProps {
 
 const chartConfig = {
   count: {
-    label: "Quotes",
+    label: "Devis",
   },
   [QuoteStatus.ACCEPTED]: {
-    label: "Accepted",
-    color: "hsl(var(--chart-2))", // Greenish usually
+    label: "Accepté",
+    color: "hsl(142 76% 36%)",
   },
   [QuoteStatus.SENT]: {
-    label: "Sent",
-    color: "hsl(var(--chart-1))", // Blueish
+    label: "Envoyé",
+    color: "hsl(221 83% 53%)",
   },
   [QuoteStatus.DRAFT]: {
-    label: "Draft",
-    color: "hsl(var(--muted-foreground))", // Gray
+    label: "Brouillon",
+    color: "hsl(38 92% 50%)",
   },
   [QuoteStatus.REJECTED]: {
-    label: "Rejected",
-    color: "hsl(var(--destructive))", // Red
+    label: "Refusé",
+    color: "hsl(0 84% 60%)",
   },
 } satisfies ChartConfig;
 
@@ -58,15 +58,15 @@ export function StatusDistribution({ data }: StatusDistributionProps) {
   }, [data]);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col w-full overflow-hidden">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Quote Status</CardTitle>
-        <CardDescription>Distribution of quotes by status</CardDescription>
+        <CardTitle>Statut des Devis</CardTitle>
+        <CardDescription>Répartition par statut</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-0 overflow-hidden">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
+          className="aspect-auto mx-auto h-[250px] w-full"
         >
           <PieChart>
             <ChartTooltip

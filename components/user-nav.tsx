@@ -71,11 +71,11 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            Profile
+            Profil
             {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push("/settings")}>
-            Settings
+            Paramètres
             {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -86,7 +86,7 @@ export function UserNav() {
           ) : (
             <LogOut className="mr-2 h-4 w-4" />
           )}
-          Log out
+          Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

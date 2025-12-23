@@ -33,18 +33,18 @@ export default function QuotesPage() {
   }, [currentPage]);
 
   return (
-    <div className="container py-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="page-container">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quotes</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Devis</h1>
           <p className="text-muted-foreground">
-            Manage your quotes and estimates.
+            Gérez vos devis et estimations.
           </p>
         </div>
         <Link href="/quotes/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            New Quote
+            Nouveau Devis
           </Button>
         </Link>
       </div>
@@ -74,12 +74,12 @@ export default function QuotesPage() {
       ) : quotes.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 border rounded-lg bg-muted/10">
           <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium">No quotes yet</h3>
+          <h3 className="text-lg font-medium">Aucun devis</h3>
           <p className="text-muted-foreground mb-6">
-            Create your first quote to get started.
+            Créez votre premier devis pour commencer.
           </p>
           <Link href="/quotes/create">
-            <Button variant="outline">Create Quote</Button>
+            <Button variant="outline">Créer un Devis</Button>
           </Link>
         </div>
       ) : (
@@ -111,7 +111,7 @@ export default function QuotesPage() {
                         })}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {quote.items.length} items
+                        {quote.items.length} articles
                       </p>
                     </div>
                   </div>
@@ -129,17 +129,17 @@ export default function QuotesPage() {
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           >
-            Previous
+            Précédent
           </Button>
           <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
+            Page {currentPage} sur {totalPages}
           </span>
           <Button
             variant="outline"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
           >
-            Next
+            Suivant
           </Button>
         </div>
       )}

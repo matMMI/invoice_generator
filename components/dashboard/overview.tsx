@@ -21,20 +21,25 @@ interface OverviewProps {
 
 const chartConfig = {
   total: {
-    label: "Revenue",
+    label: "Chiffre d'affaires",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
 export function Overview({ data }: OverviewProps) {
   return (
-    <Card>
+    <Card className="w-full overflow-hidden">
       <CardHeader>
-        <CardTitle>Overview</CardTitle>
-        <CardDescription>Monthly revenue for the last 6 months</CardDescription>
+        <CardTitle>Aperçu</CardTitle>
+        <CardDescription>
+          Chiffre d'affaires des 6 derniers mois
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+      <CardContent className="overflow-hidden">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[250px] w-full"
+        >
           <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             <XAxis

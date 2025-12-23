@@ -7,9 +7,15 @@ interface StatusBadgeProps {
   className?: string;
 }
 
+const statusLabels: Record<string, string> = {
+  Draft: "Brouillon",
+  Sent: "Envoyé",
+  Accepted: "Accepté",
+  Rejected: "Refusé",
+};
+
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const getStatusStyles = (status: string) => {
-    // Normalizing status string to match enum values regardless of case
     const normalizedStatus =
       status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
@@ -27,6 +33,10 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     }
   };
 
+  const normalizedStatus =
+    status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  const label = statusLabels[normalizedStatus] || status;
+
   return (
     <Badge
       variant="outline"
@@ -36,7 +46,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
         className
       )}
     >
-      {status}
+      {label}
     </Badge>
   );
 }

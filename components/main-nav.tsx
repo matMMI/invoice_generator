@@ -22,7 +22,7 @@ export function MainNav({
   const routes = [
     {
       href: "/",
-      label: "Dashboard",
+      label: "Tableau de bord",
       active: pathname === "/",
     },
     {
@@ -32,7 +32,7 @@ export function MainNav({
     },
     {
       href: "/quotes",
-      label: "Quotes",
+      label: "Devis",
       active: pathname.startsWith("/quotes"),
     },
   ];
