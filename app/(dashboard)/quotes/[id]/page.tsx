@@ -86,7 +86,34 @@ export default function QuoteDetailPage() {
       }
     }
     load();
+    load();
   }, [quoteId]);
+
+  // Polling: Automatically check status every 5s if quote is SENT
+  useEffect(() => {
+    if (!quote || quote.status !== QuoteStatus.SENT) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const updatedQuote = await getQuote(quoteId);
+        // If status changed to SIGNED or ACCEPTED, update UI
+        if (
+          updatedQuote.status === QuoteStatus.SIGNED ||
+          updatedQuote.status === QuoteStatus.ACCEPTED
+        ) {
+          setQuote(updatedQuote);
+          toast.success("Le statut du devis a changé !", {
+            duration: 5000,
+            icon: <Check className="h-5 w-5 text-green-500" />,
+          });
+        }
+      } catch (error) {
+        // Silent error
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [quote, quoteId]);
 
   const handleStatusChange = async (newStatus: QuoteStatus) => {
     if (!quote) return;

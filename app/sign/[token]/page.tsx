@@ -217,7 +217,6 @@ export default function SignQuotePage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Items Table */}
               <div className="rounded-lg border overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted">
@@ -245,7 +244,6 @@ export default function SignQuotePage() {
                 </table>
               </div>
 
-              {/* Totals */}
               <div className="flex justify-end">
                 <div className="w-64 space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -272,7 +270,6 @@ export default function SignQuotePage() {
                 </div>
               </div>
 
-              {/* Notes */}
               {quote.notes && (
                 <div className="bg-muted/50 rounded-lg p-4">
                   <p className="text-sm font-medium mb-1">Notes</p>
@@ -280,7 +277,6 @@ export default function SignQuotePage() {
                 </div>
               )}
 
-              {/* Payment Terms */}
               {quote.payment_terms && (
                 <div className="bg-muted/50 rounded-lg p-4">
                   <p className="text-sm font-medium mb-1">
@@ -294,7 +290,6 @@ export default function SignQuotePage() {
             </CardContent>
           </Card>
 
-          {/* Signature Section */}
           <Card>
             <CardHeader>
               <CardTitle>Signature électronique</CardTitle>
@@ -318,7 +313,7 @@ export default function SignQuotePage() {
                 <div className="w-full">
                   <SignatureCanvas
                     onSignatureChange={setSignatureData}
-                    width={undefined} // Responsive
+                    width={undefined}
                     height={250}
                   />
                 </div>
