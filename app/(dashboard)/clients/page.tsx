@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Search, X, Users } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -59,22 +60,37 @@ export default function ClientsPage() {
   };
 
   const handleCreate = async (data: any) => {
-    await createClient(data);
-    setShowForm(false);
-    fetchClients(search);
+    try {
+      await createClient(data);
+      setShowForm(false);
+      toast.success("Client created successfully");
+      fetchClients(search);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create client");
+    }
   };
 
   const handleUpdate = async (data: any) => {
     if (editingClient) {
-      await updateClient(editingClient.id, data);
-      setEditingClient(null);
-      fetchClients(search);
+      try {
+        await updateClient(editingClient.id, data);
+        setEditingClient(null);
+        toast.success("Client updated successfully");
+        fetchClients(search);
+      } catch (err: any) {
+        toast.error(err.message || "Failed to update client");
+      }
     }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteClient(id);
-    fetchClients(search, currentPage);
+    try {
+      await deleteClient(id);
+      toast.success("Client deleted successfully");
+      fetchClients(search, currentPage);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete client");
+    }
   };
 
   if (showForm || editingClient) {

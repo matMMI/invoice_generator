@@ -16,6 +16,9 @@ import {
 import { DashboardMetrics, getDashboardMetrics } from "@/lib/api/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { Overview } from "@/components/dashboard/overview";
+import { StatusDistribution } from "@/components/dashboard/status-distribution";
+
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,37 +66,11 @@ export default function DashboardPage() {
             </Card>
           ))}
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-6 w-36" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex justify-between">
-                  <Skeleton className="h-6 w-20" />
-                  <Skeleton className="h-6 w-8" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-6 w-36" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex justify-between p-3">
-                  <div>
-                    <Skeleton className="h-5 w-24 mb-1" />
-                    <Skeleton className="h-4 w-20" />
-                  </div>
-                  <Skeleton className="h-8 w-20" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mb-8">
+          <Skeleton className="col-span-4 h-[300px]" />
+          <Skeleton className="col-span-3 h-[300px]" />
         </div>
+        <Skeleton className="h-[200px]" />
       </div>
     );
   }
@@ -158,85 +135,67 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Quotes by Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quotes by Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {metrics?.quotes_by_status.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No quotes yet</p>
-            ) : (
-              <div className="space-y-4">
-                {metrics?.quotes_by_status.map((item) => (
-                  <div
-                    key={item.status}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <StatusBadge status={item.status} />
-                    </div>
-                    <span className="text-2xl font-bold">{item.count}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Quotes */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Recent Quotes</CardTitle>
-            <Link href="/quotes">
-              <Button variant="ghost" size="sm">
-                View all
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {metrics?.recent_quotes.length === 0 ? (
-              <div className="text-center py-6">
-                <p className="text-muted-foreground text-sm mb-4">
-                  No quotes yet
-                </p>
-                <Link href="/quotes/create">
-                  <Button variant="outline" size="sm">
-                    Create your first quote
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {metrics?.recent_quotes.map((quote) => (
-                  <Link
-                    key={quote.id}
-                    href={`/quotes/${quote.id}`}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div>
-                      <p className="font-medium">{quote.quote_number}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(quote.created_at).toLocaleDateString("fr-FR")}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">
-                        {formatCurrency(quote.total, quote.currency)}
-                      </p>
-                      <div className="mt-1 flex justify-end">
-                        <StatusBadge status={quote.status} />
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Charts */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mb-8">
+        <div className="col-span-4">
+          <Overview data={metrics?.monthly_revenue || []} />
+        </div>
+        <div className="col-span-3">
+          <StatusDistribution data={metrics?.quotes_by_status || []} />
+        </div>
       </div>
+
+      {/* Recent Quotes */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Recent Quotes</CardTitle>
+          <Link href="/quotes">
+            <Button variant="ghost" size="sm">
+              View all
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </CardHeader>
+        <CardContent>
+          {metrics?.recent_quotes.length === 0 ? (
+            <div className="text-center py-6">
+              <p className="text-muted-foreground text-sm mb-4">
+                No quotes yet
+              </p>
+              <Link href="/quotes/create">
+                <Button variant="outline" size="sm">
+                  Create your first quote
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {metrics?.recent_quotes.map((quote) => (
+                <Link
+                  key={quote.id}
+                  href={`/quotes/${quote.id}`}
+                  className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div>
+                    <p className="font-medium">{quote.quote_number}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(quote.created_at).toLocaleDateString("fr-FR")}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold">
+                      {formatCurrency(quote.total, quote.currency)}
+                    </p>
+                    <div className="mt-1 flex justify-end">
+                      <StatusBadge status={quote.status} />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

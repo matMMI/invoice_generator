@@ -1,6 +1,17 @@
 "use client";
 
 import { Client } from "@/lib/api/clients";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ClientCardProps {
   client: Client;
@@ -26,16 +37,31 @@ export function ClientCard({ client, onEdit, onDelete }: ClientCardProps) {
           >
             Edit
           </button>
-          <button
-            onClick={() => {
-              if (confirm(`Delete client "${client.name}"?`)) {
-                onDelete(client.id);
-              }
-            }}
-            className=" text-red-600 hover:text-red-800 text-sm font-medium"
-          >
-            Delete
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="text-red-600 hover:text-red-800 text-sm font-medium">
+                Delete
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete client?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete "
+                  {client.name}" and all associated quotes.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDelete(client.id)}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 

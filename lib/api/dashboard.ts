@@ -21,12 +21,18 @@ export interface RecentQuote {
   created_at: string;
 }
 
+export interface MonthlyRevenue {
+  name: string;
+  total: number;
+}
+
 export interface DashboardMetrics {
   total_quotes: number;
   total_clients: number;
   quotes_by_status: StatusCount[];
   totals_by_currency: CurrencyTotal[];
   recent_quotes: RecentQuote[];
+  monthly_revenue: MonthlyRevenue[];
 }
 
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
