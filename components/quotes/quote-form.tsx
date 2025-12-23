@@ -9,13 +9,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { ClientSelector } from "@/components/clients/client-selector";
 import { LineItemsEditor } from "./line-items-editor";
 import { QuoteTotals } from "./quote-totals";
-import { Currency, createQuote } from "@/lib/api/quotes";
+import { Currency, Quote, createQuote, updateQuote } from "@/lib/api/quotes";
 import { quoteFormSchema, type QuoteFormValues } from "@/lib/schemas/quote";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-export function QuoteForm() {
+interface QuoteFormProps {
+  mode?: "create" | "edit";
+  initialData?: Quote;
+}
+
+export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
   const router = useRouter();
+  const isEdit = mode === "edit";
 
   const {
     register,
@@ -25,13 +31,27 @@ export function QuoteForm() {
     formState: { errors, isSubmitting },
   } = useForm<QuoteFormValues>({
     resolver: zodResolver(quoteFormSchema),
-    defaultValues: {
-      client_id: "",
-      currency: Currency.EUR,
-      tax_rate: 20,
-      notes: "",
-      items: [{ description: "", quantity: 1, unit_price: 0, order: 0 }],
-    },
+    defaultValues: initialData
+      ? {
+          client_id: initialData.client_id,
+          currency: initialData.currency,
+          tax_rate: initialData.tax_rate,
+          notes: initialData.notes || "",
+          items: initialData.items.map((item) => ({
+            id: item.id,
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            order: item.order || 0,
+          })),
+        }
+      : {
+          client_id: "",
+          currency: Currency.EUR,
+          tax_rate: 20,
+          notes: "",
+          items: [{ description: "", quantity: 1, unit_price: 0, order: 0 }],
+        },
   });
 
   const items = watch("items");
@@ -40,12 +60,20 @@ export function QuoteForm() {
 
   const onSubmit = async (data: QuoteFormValues) => {
     try {
-      await createQuote(data);
-      toast.success("Quote created successfully");
-      router.push("/quotes");
+      if (isEdit && initialData) {
+        await updateQuote(initialData.id, data);
+        toast.success("Quote updated successfully");
+        router.push(`/quotes/${initialData.id}`);
+      } else {
+        await createQuote(data);
+        toast.success("Quote created successfully");
+        router.push("/quotes");
+      }
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Failed to create quote");
+      toast.error(
+        error.message || `Failed to ${isEdit ? "update" : "create"} quote`
+      );
     }
   };
 
@@ -102,7 +130,7 @@ export function QuoteForm() {
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create Quote
+          {isEdit ? "Update Quote" : "Create Quote"}
         </Button>
       </div>
     </form>

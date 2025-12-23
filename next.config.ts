@@ -3,6 +3,20 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  async redirects() {
+    return [
+      {
+        source: "/auth/login",
+        destination: "/login",
+        permanent: true,
+      },
+      {
+        source: "/auth/signup",
+        destination: "/signup",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

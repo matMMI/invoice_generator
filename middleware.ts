@@ -8,15 +8,19 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const isAuthPage = path.startsWith("/login") || path.startsWith("/signup");
-  const isRootPage = path === "/";
   const isProtectedPath =
-    path.startsWith("/clients") || path.startsWith("/dashboard");
+    path === "/" ||
+    path.startsWith("/clients") ||
+    path.startsWith("/quotes") ||
+    path.startsWith("/dashboard");
 
   if (sessionToken) {
-    if (isAuthPage || isRootPage) {
-      return NextResponse.redirect(new URL("/clients", request.url));
+    // Logged in user trying to access auth pages -> redirect to dashboard
+    if (isAuthPage) {
+      return NextResponse.redirect(new URL("/", request.url));
     }
   } else {
+    // Not logged in user trying to access protected pages -> redirect to login
     if (isProtectedPath) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
@@ -26,5 +30,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/signup", "/clients/:path*", "/dashboard/:path*"],
+  matcher: [
+    "/",
+    "/login",
+    "/signup",
+    "/clients/:path*",
+    "/quotes/:path*",
+    "/dashboard/:path*",
+  ],
 };

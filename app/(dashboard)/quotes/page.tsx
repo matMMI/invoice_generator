@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, FileText, Loader2 } from "lucide-react";
 import { getQuotes, Quote } from "@/lib/api/quotes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/status-badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
@@ -27,7 +28,7 @@ export default function QuotesPage() {
   }, []);
 
   return (
-    <div className="container py-10">
+    <div className="container py-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Quotes</h1>
@@ -44,8 +45,26 @@ export default function QuotesPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Card key={i}>
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-5 w-16" />
+                </div>
+                <Skeleton className="h-4 w-24 mt-2" />
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-end mt-4">
+                  <div>
+                    <Skeleton className="h-8 w-28 mb-1" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       ) : quotes.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 border rounded-lg bg-muted/10">
@@ -65,39 +84,34 @@ export default function QuotesPage() {
               key={quote.id}
               className="hover:bg-muted/50 transition-colors"
             >
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg font-semibold">
-                    {quote.quote_number}
-                  </CardTitle>
-                  <Badge
-                    variant={quote.status === "Draft" ? "secondary" : "default"}
-                  >
-                    {quote.status}
-                  </Badge>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {new Date(quote.created_at).toLocaleDateString()}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-end mt-4">
-                  <div>
-                    <p className="text-2xl font-bold">
-                      {quote.total.toLocaleString("fr-FR", {
-                        style: "currency",
-                        currency: quote.currency,
-                      })}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {quote.items.length} items
-                    </p>
+              <Link href={`/quotes/${quote.id}`}>
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg font-semibold">
+                      {quote.quote_number}
+                    </CardTitle>
+                    <StatusBadge status={quote.status} />
                   </div>
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href={`/quotes/${quote.id}/edit`}>Edit</Link>
-                  </Button>
-                </div>
-              </CardContent>
+                  <div className="text-sm text-muted-foreground">
+                    {new Date(quote.created_at).toLocaleDateString()}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-end mt-4">
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {quote.total.toLocaleString("fr-FR", {
+                          style: "currency",
+                          currency: quote.currency,
+                        })}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {quote.items.length} items
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Link>
             </Card>
           ))}
         </div>

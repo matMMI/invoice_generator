@@ -32,7 +32,7 @@ export function ClientCard({ client, onEdit, onDelete }: ClientCardProps) {
                 onDelete(client.id);
               }
             }}
-            className="text-red-600 hover:text-red-800 text-sm font-medium"
+            className=" text-red-600 hover:text-red-800 text-sm font-medium"
           >
             Delete
           </button>
