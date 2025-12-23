@@ -12,12 +12,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const LIMIT = 9;
 
   useEffect(() => {
     async function load() {
       try {
-        const data = await getQuotes();
-        setQuotes(data);
+        setLoading(true);
+        const data = await getQuotes(currentPage, LIMIT);
+        setQuotes(data.quotes);
+        setTotalPages(Math.ceil(data.total / LIMIT));
       } catch (e) {
         console.error(e);
       } finally {
@@ -25,7 +30,7 @@ export default function QuotesPage() {
       }
     }
     load();
-  }, []);
+  }, [currentPage]);
 
   return (
     <div className="container py-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -114,6 +119,28 @@ export default function QuotesPage() {
               </Link>
             </Card>
           ))}
+        </div>
+      )}
+
+      {!loading && quotes.length > 0 && totalPages > 1 && (
+        <div className="flex justify-center items-center mt-8 space-x-2">
+          <Button
+            variant="outline"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </Button>
         </div>
       )}
     </div>

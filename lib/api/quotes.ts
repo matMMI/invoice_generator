@@ -86,11 +86,18 @@ export async function createQuote(data: CreateQuoteData): Promise<Quote> {
   return res.json();
 }
 
-export async function getQuotes(): Promise<Quote[]> {
+export async function getQuotes(
+  page: number = 1,
+  limit: number = 10
+): Promise<{ quotes: Quote[]; total: number }> {
   const session = await authClient.getSession();
   const token = session.data?.session.token;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quotes`, {
+  const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}/api/quotes`);
+  url.searchParams.set("page", page.toString());
+  url.searchParams.set("limit", limit.toString());
+
+  const res = await fetch(url.toString(), {
     headers: {
       Authorization: `Bearer ${token}`,
     },

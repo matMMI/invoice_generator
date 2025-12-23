@@ -21,16 +21,22 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const LIMIT = 9; // Grid layout 3x3 nicely
+
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const fetchClients = async (searchQuery?: string) => {
+  const fetchClients = async (searchQuery?: string, page: number = 1) => {
     try {
       setLoading(true);
-      const data = await getClients(searchQuery);
+      const data = await getClients(searchQuery, page, LIMIT);
       setClients(data.clients);
+      setTotalPages(Math.ceil(data.total / LIMIT));
+      setCurrentPage(page);
     } catch (err: any) {
       if (err instanceof Error && err.message === "Not authenticated") {
         router.push("/login"); // Redirect to login
@@ -43,12 +49,13 @@ export default function ClientsPage() {
   };
 
   useEffect(() => {
-    fetchClients();
-  }, []);
+    fetchClients(search, currentPage);
+  }, [currentPage]); // Re-fetch when page changes. Search is handled separately.
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchClients(search);
+    setCurrentPage(1); // Reset to page 1
+    fetchClients(search, 1);
   };
 
   const handleCreate = async (data: any) => {
@@ -67,7 +74,7 @@ export default function ClientsPage() {
 
   const handleDelete = async (id: string) => {
     await deleteClient(id);
-    fetchClients(search);
+    fetchClients(search, currentPage);
   };
 
   if (showForm || editingClient) {
@@ -132,7 +139,8 @@ export default function ClientsPage() {
               variant="ghost"
               onClick={() => {
                 setSearch("");
-                fetchClients();
+                setCurrentPage(1);
+                fetchClients("", 1);
               }}
             >
               <X className="h-4 w-4" />
@@ -183,6 +191,28 @@ export default function ClientsPage() {
               onDelete={handleDelete}
             />
           ))}
+        </div>
+      )}
+
+      {!loading && clients.length > 0 && totalPages > 1 && (
+        <div className="flex justify-center items-center mt-8 space-x-2">
+          <Button
+            variant="outline"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </Button>
         </div>
       )}
     </div>

@@ -70,7 +70,9 @@ export async function createClient(data: ClientCreate): Promise<Client> {
  * Get all clients with optional search
  */
 export async function getClients(
-  search?: string
+  search?: string,
+  page: number = 1,
+  limit: number = 10
 ): Promise<{ clients: Client[]; total: number }> {
   const headers = await getAuthHeaders();
   const url = new URL(`${API_BASE}/api/clients`);
@@ -78,6 +80,8 @@ export async function getClients(
   if (search) {
     url.searchParams.set("search", search);
   }
+  url.searchParams.set("page", page.toString());
+  url.searchParams.set("limit", limit.toString());
 
   const response = await fetch(url.toString(), {
     method: "GET",
