@@ -19,6 +19,7 @@ export interface RecentQuote {
   currency: string;
   total: number;
   created_at: string;
+  client_name: string;
 }
 
 export interface MonthlyRevenue {

@@ -148,9 +148,9 @@ export default function QuoteDetailPage() {
   if (!quote) {
     return (
       <div className="container py-10 text-center">
-        <p className="text-muted-foreground">Quote not found</p>
+        <p className="text-muted-foreground">Devis introuvable</p>
         <Link href="/quotes">
-          <Button variant="link">Back to quotes</Button>
+          <Button variant="link">Retour aux devis</Button>
         </Link>
       </div>
     );
@@ -169,7 +169,7 @@ export default function QuoteDetailPage() {
               {quote.quote_number}
             </h1>
             <p className="text-muted-foreground">
-              Created {new Date(quote.created_at).toLocaleDateString("fr-FR")}
+              Créé le {new Date(quote.created_at).toLocaleDateString("fr-FR")}
             </p>
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function QuoteDetailPage() {
           <Link href={`/quotes/${quote.id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
-              Edit
+              Modifier
             </Button>
           </Link>
 
@@ -192,7 +192,7 @@ export default function QuoteDetailPage() {
             ) : (
               <FileDown className="mr-2 h-4 w-4" />
             )}
-            {generatingPdf ? "Generating..." : "Generate PDF"}
+            {generatingPdf ? "Génération..." : "Télécharger PDF"}
           </Button>
 
           <AlertDialog>
@@ -207,16 +207,16 @@ export default function QuoteDetailPage() {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete this quote?</AlertDialogTitle>
+                <AlertDialogTitle>Supprimer ce devis ?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  quote {quote.quote_number}.
+                  Cette action est irréversible. Cela supprimera définitivement
+                  le devis {quote.quote_number}.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete}>
-                  Delete
+                  Supprimer
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -230,7 +230,7 @@ export default function QuoteDetailPage() {
           {/* Line Items */}
           <Card>
             <CardHeader>
-              <CardTitle>Line Items</CardTitle>
+              <CardTitle>Articles</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="border rounded-lg overflow-x-auto">
@@ -238,8 +238,8 @@ export default function QuoteDetailPage() {
                   <thead className="bg-muted/50">
                     <tr>
                       <th className="text-left p-3 font-medium">Description</th>
-                      <th className="text-right p-3 font-medium">Qty</th>
-                      <th className="text-right p-3 font-medium">Unit Price</th>
+                      <th className="text-right p-3 font-medium">Qté</th>
+                      <th className="text-right p-3 font-medium">Prix Unit.</th>
                       <th className="text-right p-3 font-medium">Total</th>
                     </tr>
                   </thead>
@@ -282,7 +282,7 @@ export default function QuoteDetailPage() {
           {/* Status */}
           <Card>
             <CardHeader>
-              <CardTitle>Status</CardTitle>
+              <CardTitle>Statut</CardTitle>
             </CardHeader>
             <CardContent>
               <Select
@@ -294,10 +294,10 @@ export default function QuoteDetailPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={QuoteStatus.DRAFT}>Draft</SelectItem>
-                  <SelectItem value={QuoteStatus.SENT}>Sent</SelectItem>
-                  <SelectItem value={QuoteStatus.ACCEPTED}>Accepted</SelectItem>
-                  <SelectItem value={QuoteStatus.REJECTED}>Rejected</SelectItem>
+                  <SelectItem value={QuoteStatus.DRAFT}>Brouillon</SelectItem>
+                  <SelectItem value={QuoteStatus.SENT}>Envoyé</SelectItem>
+                  <SelectItem value={QuoteStatus.ACCEPTED}>Accepté</SelectItem>
+                  <SelectItem value={QuoteStatus.REJECTED}>Refusé</SelectItem>
                 </SelectContent>
               </Select>
             </CardContent>
@@ -314,9 +314,11 @@ export default function QuoteDetailPage() {
             <CardContent>
               {client ? (
                 <div className="space-y-1">
-                  <p className="font-medium">{client.name}</p>
+                  <p className="font-bold text-lg text-primary">
+                    {client.name}
+                  </p>
                   {client.company && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm font-medium text-foreground">
                       {client.company}
                     </p>
                   )}
@@ -325,7 +327,7 @@ export default function QuoteDetailPage() {
                   </p>
                 </div>
               ) : (
-                <p className="text-muted-foreground">Loading...</p>
+                <p className="text-muted-foreground">Chargement...</p>
               )}
             </CardContent>
           </Card>
@@ -333,16 +335,16 @@ export default function QuoteDetailPage() {
           {/* Totals */}
           <Card>
             <CardHeader>
-              <CardTitle>Summary</CardTitle>
+              <CardTitle>Résumé</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">Sous-total</span>
                 <span>{formatCurrency(quote.subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  Tax ({quote.tax_rate}%)
+                  TVA ({quote.tax_rate}%)
                 </span>
                 <span>{formatCurrency(quote.tax_amount)}</span>
               </div>

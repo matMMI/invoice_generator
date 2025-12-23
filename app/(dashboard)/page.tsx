@@ -197,25 +197,33 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="space-y-4">
+              <div className="grid grid-cols-5 gap-4 px-3 py-2 text-sm font-medium text-muted-foreground border-b">
+                <div className="col-span-1">N° Devis</div>
+                <div className="col-span-1">Client</div>
+                <div className="col-span-1">Date</div>
+                <div className="col-span-1 text-right">Montant</div>
+                <div className="col-span-1 text-right">Statut</div>
+              </div>
               {metrics?.recent_quotes.map((quote) => (
                 <Link
                   key={quote.id}
                   href={`/quotes/${quote.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                  className="grid grid-cols-5 gap-4 items-center p-3 rounded-lg hover:bg-muted/50 transition-colors text-sm"
                 >
-                  <div>
-                    <p className="font-medium">{quote.quote_number}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(quote.created_at).toLocaleDateString("fr-FR")}
-                    </p>
+                  <div className="font-medium truncate col-span-1">
+                    {quote.quote_number}
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold">
-                      {formatCurrency(quote.total, quote.currency)}
-                    </p>
-                    <div className="mt-1 flex justify-end">
-                      <StatusBadge status={quote.status} />
-                    </div>
+                  <div className="font-medium text-foreground/80 truncate col-span-1">
+                    {quote.client_name || "Client Inconnu"}
+                  </div>
+                  <div className="text-muted-foreground truncate col-span-1">
+                    {new Date(quote.created_at).toLocaleDateString("fr-FR")}
+                  </div>
+                  <div className="font-bold text-right truncate col-span-1">
+                    {formatCurrency(quote.total, quote.currency)}
+                  </div>
+                  <div className="flex justify-end col-span-1">
+                    <StatusBadge status={quote.status} />
                   </div>
                 </Link>
               ))}

@@ -11,9 +11,8 @@ interface FiscalStatusProps {
 
 export function FiscalStatus({ data }: FiscalStatusProps) {
   const MICRO_CEILING = 77700;
-  const VAT_THRESHOLD = 36800; // Base threshold, simplify for now
-  const URSSAF_RATE = 0.211; // ~21.1% for services
-
+  const VAT_THRESHOLD = 36800;
+  const URSSAF_RATE = 0.211;
   const progress = (data.year_to_date / MICRO_CEILING) * 100;
   const urssafEstimate = data.quarter_to_date * URSSAF_RATE;
 

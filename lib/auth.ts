@@ -1,11 +1,13 @@
 import { betterAuth } from "better-auth";
 import { Pool } from "pg";
+import { username } from "better-auth/plugins";
 
 export const auth = betterAuth({
   basePath: "/auth",
   database: new Pool({
     connectionString: process.env.DATABASE_URL,
   }),
+  plugins: [username()],
   emailAndPassword: {
     enabled: true,
   },
@@ -21,6 +23,7 @@ export const auth = betterAuth({
       logo_url: { type: "string", required: false },
     },
   },
+  // ... rest of config
   session: {
     fields: {
       userId: "user_id",

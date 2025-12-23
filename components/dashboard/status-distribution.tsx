@@ -101,7 +101,7 @@ export function StatusDistribution({ data }: StatusDistributionProps) {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground text-xs"
                         >
-                          Quotes
+                          Devis
                         </tspan>
                       </text>
                     );
