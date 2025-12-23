@@ -6,10 +6,43 @@ import { Progress } from "@/components/ui/progress";
 import { AlertCircle, TrendingUp } from "lucide-react";
 
 interface FiscalStatusProps {
-  data: FiscalRevenue;
+  data?: FiscalRevenue;
+  loading?: boolean;
 }
 
-export function FiscalStatus({ data }: FiscalStatusProps) {
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function FiscalStatus({ data, loading }: FiscalStatusProps) {
+  if (loading || !data) {
+    return (
+      <Card className="h-full">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium flex items-center justify-between">
+            <Skeleton className="h-4 w-48" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <Skeleton className="h-2 w-full mt-2" />
+              <Skeleton className="h-3 w-20 ml-auto mt-1" />
+            </div>
+            <div className="pt-4 border-t">
+              <div className="flex justify-between items-center mb-1">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-6 w-24" />
+              </div>
+              <Skeleton className="h-3 w-64 mt-1" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   const MICRO_CEILING = 77700;
   const VAT_THRESHOLD = 36800;
   const URSSAF_RATE = 0.211;

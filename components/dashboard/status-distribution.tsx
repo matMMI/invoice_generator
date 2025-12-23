@@ -20,7 +20,8 @@ import {
 import { QuoteStatus } from "@/lib/api/quotes";
 
 interface StatusDistributionProps {
-  data: { status: string; count: number }[];
+  data?: { status: string; count: number }[];
+  loading?: boolean;
 }
 
 const chartConfig = {
@@ -45,20 +46,40 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function StatusDistribution({ data }: StatusDistributionProps) {
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function StatusDistribution({ data, loading }: StatusDistributionProps) {
+  const safeData = data || [];
+
   const chartData = React.useMemo(() => {
-    return data.map((item) => ({
+    return safeData.map((item) => ({
       ...item,
       fill: `var(--color-${item.status})`,
     }));
-  }, [data]);
+  }, [safeData]);
 
   const totalQuotes = React.useMemo(() => {
-    return data.reduce((acc, curr) => acc + curr.count, 0);
-  }, [data]);
+    return safeData.reduce((acc, curr) => acc + curr.count, 0);
+  }, [safeData]);
+
+  if (loading || !data) {
+    return (
+      <Card className="flex flex-col w-full h-full overflow-hidden">
+        <CardHeader className="items-center pb-0">
+          <CardTitle>Statut des Devis</CardTitle>
+          <CardDescription>
+            <Skeleton className="h-4 w-32" />
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 pb-0 overflow-hidden flex items-center justify-center">
+          <Skeleton className="h-[200px] w-[200px] rounded-full" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="flex flex-col w-full overflow-hidden">
+    <Card className="flex flex-col w-full h-full overflow-hidden">
       <CardHeader className="items-center pb-0">
         <CardTitle>Statut des Devis</CardTitle>
         <CardDescription>Répartition par statut</CardDescription>
