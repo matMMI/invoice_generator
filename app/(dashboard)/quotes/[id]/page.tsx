@@ -94,14 +94,28 @@ export default function QuoteDetailPage() {
 
     const interval = setInterval(async () => {
       try {
-        const updatedQuote = await getQuote(quoteId);
+        // Manually fetch to force cache busting since getQuote helper was reverted
+        const session = await authClient.getSession();
+        const token = session.data?.session.token;
+        const res = await fetch(
+          `${
+            process.env.NEXT_PUBLIC_API_URL
+          }/api/quotes/${quoteId}?_t=${Date.now()}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: "no-store",
+          }
+        );
+        if (!res.ok) return;
+        const updatedQuote: Quote = await res.json();
+
         // If status changed to SIGNED or ACCEPTED, update UI
         if (
           updatedQuote.status === QuoteStatus.SIGNED ||
           updatedQuote.status === QuoteStatus.ACCEPTED
         ) {
           setQuote(updatedQuote);
-          toast.success("Le statut du devis a changé !", {
+          toast.success("Le devis a été signé par le client !", {
             duration: 5000,
             icon: <Check className="h-5 w-5 text-green-500" />,
           });
