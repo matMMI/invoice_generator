@@ -118,6 +118,7 @@ export async function getQuote(id: string): Promise<Quote> {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      cache: "no-store",
     }
   );
 

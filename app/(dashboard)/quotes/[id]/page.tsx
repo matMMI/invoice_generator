@@ -86,7 +86,6 @@ export default function QuoteDetailPage() {
       }
     }
     load();
-    load();
   }, [quoteId]);
 
   // Polling: Automatically check status every 5s if quote is SENT
