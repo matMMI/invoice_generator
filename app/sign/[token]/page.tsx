@@ -218,7 +218,7 @@ export default function SignQuotePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Items Table */}
-              <div className="rounded-lg border overflow-hidden">
+              <div className="rounded-lg border overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted">
                     <tr>
@@ -315,7 +315,7 @@ export default function SignQuotePage() {
 
               <div className="space-y-2">
                 <Label>Votre signature</Label>
-                <div className="h-[250px] w-full">
+                <div className="w-full">
                   <SignatureCanvas
                     onSignatureChange={setSignatureData}
                     width={undefined} // Responsive

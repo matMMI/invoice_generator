@@ -1,12 +1,10 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -57,14 +55,11 @@ import {
 import { getClient, Client } from "@/lib/api/clients";
 import { generateQuotePdf } from "@/lib/api/pdf";
 import { toast } from "sonner";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
 export default function QuoteDetailPage() {
   const router = useRouter();
   const params = useParams();
   const quoteId = params.id as string;
-
   const [quote, setQuote] = useState<Quote | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
@@ -81,7 +76,6 @@ export default function QuoteDetailPage() {
       try {
         const quoteData = await getQuote(quoteId);
         setQuote(quoteData);
-        // Fetch client info
         const clientData = await getClient(quoteData.client_id);
         setClient(clientData);
       } catch (e) {
@@ -141,7 +135,6 @@ export default function QuoteDetailPage() {
     try {
       const session = await authClient.getSession();
       const token = session.data?.session.token;
-
       const res = await fetch(`${API_BASE_URL}/api/quotes/${quote.id}/share`, {
         method: "POST",
         headers: {
@@ -153,7 +146,6 @@ export default function QuoteDetailPage() {
         throw new Error("Échec de la génération du lien");
       }
       const data = await res.json();
-      // Build full URL
       const fullUrl = `${window.location.origin}${data.share_url}`;
       setShareUrl(fullUrl);
       setShareDialogOpen(true);
@@ -221,7 +213,6 @@ export default function QuoteDetailPage() {
 
   return (
     <div className="page-container">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
@@ -286,11 +277,8 @@ export default function QuoteDetailPage() {
           </AlertDialog>
         </div>
       </div>
-
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Main Content */}
         <div className="md:col-span-2 space-y-6">
-          {/* Line Items */}
           <Card>
             <CardHeader>
               <CardTitle>Articles</CardTitle>
@@ -324,8 +312,6 @@ export default function QuoteDetailPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Notes */}
           {quote.notes && (
             <Card>
               <CardHeader>
@@ -339,10 +325,7 @@ export default function QuoteDetailPage() {
             </Card>
           )}
         </div>
-
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Status */}
           <Card>
             <CardHeader>
               <CardTitle>Statut</CardTitle>
@@ -381,8 +364,6 @@ export default function QuoteDetailPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Client Info */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -410,8 +391,6 @@ export default function QuoteDetailPage() {
               )}
             </CardContent>
           </Card>
-
-          {/* Totals */}
           <Card>
             <CardHeader>
               <CardTitle>Résumé</CardTitle>
@@ -435,8 +414,6 @@ export default function QuoteDetailPage() {
           </Card>
         </div>
       </div>
-
-      {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent>
           <DialogHeader>
