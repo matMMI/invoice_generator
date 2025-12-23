@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -136,11 +137,17 @@ export default function QuoteDetailPage() {
   const handleShare = async () => {
     if (!quote) return;
     setSharing(true);
+    setSharing(true);
     try {
+      const session = await authClient.getSession();
+      const token = session.data?.session.token;
+
       const res = await fetch(`${API_BASE_URL}/api/quotes/${quote.id}/share`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!res.ok) {
         throw new Error("Échec de la génération du lien");
