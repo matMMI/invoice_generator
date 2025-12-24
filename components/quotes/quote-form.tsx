@@ -13,6 +13,7 @@ import { Currency, Quote, createQuote, updateQuote } from "@/lib/api/quotes";
 import { quoteFormSchema, type QuoteFormValues } from "@/lib/schemas/quote";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useGlobalActivity } from "@/components/providers/global-activity-provider";
 
 interface QuoteFormProps {
   mode?: "create" | "edit";
@@ -21,6 +22,7 @@ interface QuoteFormProps {
 
 export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
   const router = useRouter();
+  const { notifyChange } = useGlobalActivity();
   const isEdit = mode === "edit";
 
   const {
@@ -62,10 +64,12 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
     try {
       if (isEdit && initialData) {
         await updateQuote(initialData.id, data);
+        notifyChange("quote_updated");
         toast.success("Devis mis à jour avec succès");
         router.push(`/quotes/${initialData.id}`);
       } else {
         await createQuote(data);
+        notifyChange("quote_created");
         toast.success("Devis créé avec succès");
         router.push("/quotes");
       }

@@ -1,45 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/status-badge";
-import {
-  FileText,
-  Users,
-  Plus,
-  ArrowRight,
-  Loader2,
-  TrendingUp,
-} from "lucide-react";
-import { DashboardMetrics, getDashboardMetrics } from "@/lib/api/dashboard";
+import { FileText, Users, Plus, ArrowRight, TrendingUp } from "lucide-react";
+import { getDashboardMetrics } from "@/lib/api/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { Overview } from "@/components/dashboard/overview";
 import { StatusDistribution } from "@/components/dashboard/status-distribution";
 import { FiscalStatus } from "@/components/dashboard/fiscal-status";
-
 import { useGlobalActivity } from "@/components/providers/global-activity-provider";
+import useSWR from "swr";
+import { onSyncMessage } from "@/lib/sync";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
-  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { lastUpdate } = useGlobalActivity();
+  const { quotes } = useGlobalActivity();
 
+  // SWR for metrics with auto-revalidation
+  const {
+    data: metrics,
+    isLoading: loading,
+    mutate,
+  } = useSWR("dashboard-metrics", getDashboardMetrics, {
+    revalidateOnFocus: true,
+    dedupingInterval: 5000,
+  });
+
+  // Listen for cross-tab changes to refresh metrics
   useEffect(() => {
-    async function load() {
-      try {
-        const data = await getDashboardMetrics();
-        setMetrics(data);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
+    const unsubscribe = onSyncMessage((msg) => {
+      if (msg.type.startsWith("quote_") || msg.type.startsWith("client_")) {
+        mutate();
       }
-    }
-    load();
-  }, [lastUpdate]);
+    });
+    return unsubscribe;
+  }, [mutate]);
 
   const formatCurrency = (amount: number, currency: string) => {
     return amount.toLocaleString("fr-FR", {

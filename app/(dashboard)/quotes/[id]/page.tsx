@@ -71,7 +71,7 @@ export default function QuoteDetailPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { lastUpdate, refreshData } = useGlobalActivity();
+  const { notifyChange } = useGlobalActivity();
   useEffect(() => {
     async function load() {
       try {
@@ -89,7 +89,7 @@ export default function QuoteDetailPage() {
       }
     }
     load();
-  }, [quoteId, lastUpdate]);
+  }, [quoteId]);
 
   const handleStatusChange = async (newStatus: QuoteStatus) => {
     if (!quote) return;
@@ -98,7 +98,7 @@ export default function QuoteDetailPage() {
       const updated = await updateQuote(quote.id, { status: newStatus });
       setQuote(updated);
       toast.success(`Statut mis à jour : ${newStatus}`);
-      refreshData();
+      notifyChange("quote_updated");
     } catch (e) {
       toast.error("Échec de la mise à jour du statut");
     } finally {
@@ -156,6 +156,7 @@ export default function QuoteDetailPage() {
 
       if (quote.status === QuoteStatus.DRAFT) {
         setQuote({ ...quote, status: QuoteStatus.SENT });
+        notifyChange("quote_updated");
         toast.success("Statut passé à 'Envoyé' automatiquement");
       }
     } catch (e: any) {
@@ -168,7 +169,22 @@ export default function QuoteDetailPage() {
   const handleCopyUrl = async () => {
     if (!shareUrl) return;
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      // Try modern Clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        // Fallback for mobile/older browsers
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
       setCopied(true);
       toast.success("Lien copié !");
       setTimeout(() => setCopied(false), 2000);
