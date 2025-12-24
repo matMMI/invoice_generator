@@ -14,13 +14,18 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}🚀 Starting deployment process...${NC}"
 
 # Check if commit message is provided
+# Check if commit message is provided
 if [ -z "$1" ]; then
-    echo -e "${RED}❌ Error: Please provide a commit message${NC}"
-    echo "Usage: ./deploy.sh \"your commit message\""
-    exit 1
+    echo ""
+    read -p "💬 Message de commit: " input_msg
+    if [[ -n "$input_msg" ]]; then
+        COMMIT_MSG="$input_msg"
+    else
+        COMMIT_MSG="Update Frontend - $(date +%Y-%m-%d\ %H:%M:%S)"
+    fi
+else
+    COMMIT_MSG="$1"
 fi
-
-COMMIT_MSG="$1"
 
 # Note: Backend tests are run in the separate backend repository (devis_generator_api)
 # This script only handles frontend deployment
