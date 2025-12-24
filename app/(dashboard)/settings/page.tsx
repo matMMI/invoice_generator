@@ -17,6 +17,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -29,7 +36,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import {
   Card,
   CardContent,
@@ -37,29 +43,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getSettings, updateSettings, resetAccount } from "@/lib/api/settings";
+import {
+  getSettings,
+  updateSettings,
+  resetAccount,
+  TaxStatus,
+} from "@/lib/api/settings";
 
 const settingsSchema = z.object({
-  company_name: z.string().min(1, "Le nom de l'entreprise est requis"),
-  company_address: z.string().optional(),
+  // Identity
+  name: z.string().min(1, "Le nom est requis"),
+  business_name: z.string().optional().or(z.literal("")),
+  email: z.string().email(),
+  siret: z.string().optional().or(z.literal("")),
+  address: z.string().optional().or(z.literal("")),
+  tax_status: z.nativeEnum(TaxStatus),
+  logo_url: z.string().optional().or(z.literal("")),
+
+  // Contact
   company_email: z
     .string()
     .email("E-mail invalide")
     .optional()
     .or(z.literal("")),
-  company_phone: z.string().optional(),
+  company_phone: z.string().optional().or(z.literal("")),
   company_website: z.string().url("URL invalide").optional().or(z.literal("")),
-  company_logo_url: z.string().optional(),
-  company_siret: z.string().optional(),
-  pdf_footer_text: z.string().optional(),
 
-  // Fiscal
-  is_vat_applicable: z.boolean().default(true),
-  vat_exemption_text: z.string().optional(),
-  late_payment_penalties: z.string().optional(),
-
+  // Preferences
   default_currency: z.string().min(1, "La devise est requise"),
   default_tax_rate: z.coerce.number().min(0).max(100),
+  pdf_footer_text: z.string().optional().or(z.literal("")),
+  vat_exemption_text: z.string().optional().or(z.literal("")),
+  late_payment_penalties: z.string().optional().or(z.literal("")),
 });
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -71,19 +86,21 @@ export default function SettingsPage() {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      company_name: "",
-      company_address: "",
+      name: "",
+      business_name: "",
+      email: "",
+      siret: "",
+      address: "",
+      tax_status: TaxStatus.FRANCHISE,
+      logo_url: "",
       company_email: "",
       company_phone: "",
       company_website: "",
-      company_logo_url: "",
-      company_siret: "",
-      pdf_footer_text: "",
-      is_vat_applicable: true,
-      vat_exemption_text: "TVA non applicable, art. 293 B du CGI",
-      late_payment_penalties: "3 fois le taux d'intérêt légal",
       default_currency: "EUR",
       default_tax_rate: 20,
+      pdf_footer_text: "",
+      vat_exemption_text: "TVA non applicable, art. 293 B du CGI",
+      late_payment_penalties: "3 fois le taux d'intérêt légal",
     },
   });
 
@@ -92,19 +109,21 @@ export default function SettingsPage() {
       try {
         const data = await getSettings();
         form.reset({
-          company_name: data.company_name,
-          company_address: data.company_address ?? "",
+          name: data.name,
+          business_name: data.business_name ?? "",
+          email: data.email,
+          siret: data.siret ?? "",
+          address: data.address ?? "",
+          tax_status: data.tax_status,
+          logo_url: data.logo_url ?? "",
           company_email: data.company_email ?? "",
           company_phone: data.company_phone ?? "",
           company_website: data.company_website ?? "",
-          company_logo_url: data.company_logo_url ?? "",
-          company_siret: data.company_siret ?? "",
-          pdf_footer_text: data.pdf_footer_text ?? "",
-          is_vat_applicable: data.is_vat_applicable ?? true,
-          vat_exemption_text: data.vat_exemption_text ?? "",
-          late_payment_penalties: data.late_payment_penalties ?? "",
           default_currency: data.default_currency,
           default_tax_rate: data.default_tax_rate,
+          pdf_footer_text: data.pdf_footer_text ?? "",
+          vat_exemption_text: data.vat_exemption_text ?? "",
+          late_payment_penalties: data.late_payment_penalties ?? "",
         });
       } catch (error) {
         toast.error("Échec du chargement des paramètres");
@@ -140,7 +159,7 @@ export default function SettingsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
         <p className="text-muted-foreground">
-          Gérez les informations de votre entreprise et vos préférences PDF.
+          Gérez votre profil, votre identité fiscale et vos préférences.
         </p>
       </div>
 
@@ -150,22 +169,66 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-5 w-5" />
-                Informations Entreprise
+                Identité Entreprise
               </CardTitle>
               <CardDescription>
-                Ces informations apparaîtront sur vos devis et factures.
+                Informations légales affichées sur vos documents.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
-                  name="company_name"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nom de l'entreprise</FormLabel>
+                      <FormLabel>Nom complet (Entrepreneur)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Mon Entreprise" {...field} />
+                        <Input placeholder="Jean Dupont" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="business_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nom Commercial (Optionnel)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="JD Solutions" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="siret"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Numéro SIRET</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123 456 789 00012" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Adresse du Siège</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="123 Rue de la Paix, 75000 Paris"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -177,9 +240,9 @@ export default function SettingsPage() {
                   name="company_email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>E-mail</FormLabel>
+                      <FormLabel>E-mail (Contact)</FormLabel>
                       <FormControl>
-                        <Input placeholder="contact@acme.com" {...field} />
+                        <Input placeholder="contact@pro.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -213,108 +276,96 @@ export default function SettingsPage() {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
-                  name="company_siret"
+                  name="logo_url"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Numéro SIRET</FormLabel>
+                      <FormLabel>URL du Logo</FormLabel>
                       <FormControl>
-                        <Input placeholder="123 456 789 00012" {...field} />
+                        <Input placeholder="/logo.png" {...field} />
                       </FormControl>
+                      <FormDescription>
+                        Fichier dans <code>public/</code> ou URL externe.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name="company_address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Adresse</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="123 Rue du Commerce&#10;75001 Paris"
-                        className="min-h-[100px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="company_logo_url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL du Logo</FormLabel>
-                    <FormControl>
-                      <Input placeholder="/logo.png (or full URL)" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Placez votre logo dans <code>public/logo.png</code>
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Mentions Légales & Fiscalité</CardTitle>
+              <CardTitle>Régime Fiscal (TVA)</CardTitle>
               <CardDescription>
-                Configuration TVA et pénalités pour votre statut (ex:
-                Micro-entreprise).
+                Configurez votre statut pour les calculs automatiques.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <FormField
                 control={form.control}
-                name="is_vat_applicable"
+                name="tax_status"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">
-                        TVA Applicable
-                      </FormLabel>
-                      <FormDescription>
-                        Activez si vous êtes redevable de la TVA.
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
+                  <FormItem>
+                    <FormLabel>Régime TVA</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionnez votre régime" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={TaxStatus.FRANCHISE}>
+                          Micro-entreprise (Franchise en base - Pas de TVA)
+                        </SelectItem>
+                        <SelectItem value={TaxStatus.ASSUJETTI}>
+                          Régime Réel (Assujetti à la TVA)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Détermine si la TVA est calculée sur vos devis (0% ou
+                      20%).
+                    </FormDescription>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {!form.watch("is_vat_applicable") && (
+              {form.watch("tax_status") === TaxStatus.FRANCHISE && (
                 <FormField
                   control={form.control}
                   name="vat_exemption_text"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mention Exonération TVA</FormLabel>
+                      <FormLabel>Mention Exonération</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="TVA non applicable, art. 293 B du CGI"
-                          {...field}
-                        />
+                        <Input {...field} />
                       </FormControl>
                       <FormDescription>
-                        Mention obligatoire sur les factures si vous ne facturez
-                        pas la TVA.
+                        Apparaît sur les factures sans TVA.
                       </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {form.watch("tax_status") === TaxStatus.ASSUJETTI && (
+                <FormField
+                  control={form.control}
+                  name="default_tax_rate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Taux TVA par défaut (%)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.1" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -328,10 +379,7 @@ export default function SettingsPage() {
                   <FormItem>
                     <FormLabel>Pénalités de retard</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="3 fois le taux d'intérêt légal"
-                        {...field}
-                      />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -344,7 +392,7 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle>Configuration PDF</CardTitle>
               <CardDescription>
-                Personnalisez l'apparence de vos documents générés.
+                Personnalisation visuelle du document.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -354,23 +402,9 @@ export default function SettingsPage() {
                   name="default_currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Devise par défaut</FormLabel>
+                      <FormLabel>Devise</FormLabel>
                       <FormControl>
                         <Input placeholder="EUR" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="default_tax_rate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Taux de TVA par défaut (%)</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.1" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -383,10 +417,10 @@ export default function SettingsPage() {
                 name="pdf_footer_text"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Texte de pied de page</FormLabel>
+                    <FormLabel>Pied de page personnalisé</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="SIRET: 123 456 789 00012 | IBAN: FR76..."
+                        placeholder="Infos bancaires, mentions spéciales..."
                         className="min-h-[80px]"
                         {...field}
                       />
@@ -434,8 +468,7 @@ export default function SettingsPage() {
                       <li>Tous vos devis et factures</li>
                       <li>Tous vos clients</li>
                     </ul>
-                    Votre compte utilisateur et les paramètres ci-dessus seront
-                    conservés.
+                    Votre compte utilisateur sera conservé.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

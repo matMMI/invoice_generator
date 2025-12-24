@@ -2,38 +2,45 @@ import { authClient } from "@/lib/auth-client";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+export enum TaxStatus {
+  FRANCHISE = "FRANCHISE",
+  ASSUJETTI = "ASSUJETTI",
+}
+
 export interface Settings {
-  id: string;
-  user_id: string;
-  company_name: string;
-  company_address: string | null;
+  name: string;
+  business_name: string | null;
+  email: string;
+  siret: string | null;
+  address: string | null;
+  tax_status: TaxStatus;
+  logo_url: string | null;
   company_email: string | null;
   company_phone: string | null;
   company_website: string | null;
-  company_logo_url: string | null;
-  pdf_footer_text: string | null;
-  company_siret: string | null;
-  is_vat_applicable: boolean;
-  vat_exemption_text: string;
-  late_payment_penalties: string;
   default_currency: string;
   default_tax_rate: number;
+  pdf_footer_text: string | null;
+  vat_exemption_text: string | null;
+  late_payment_penalties: string | null;
 }
 
 export interface SettingsUpdate {
-  company_name: string;
-  company_address?: string;
-  company_email?: string;
-  company_phone?: string;
-  company_website?: string;
-  company_logo_url?: string;
-  pdf_footer_text?: string;
-  company_siret?: string;
-  is_vat_applicable?: boolean;
-  vat_exemption_text?: string;
-  late_payment_penalties?: string;
+  name: string;
+  business_name?: string | null;
+  email: string;
+  siret?: string | null;
+  address?: string | null;
+  tax_status: TaxStatus;
+  logo_url?: string | null;
+  company_email?: string | null;
+  company_phone?: string | null;
+  company_website?: string | null;
   default_currency: string;
   default_tax_rate: number;
+  pdf_footer_text?: string | null;
+  vat_exemption_text?: string | null;
+  late_payment_penalties?: string | null;
 }
 
 /**

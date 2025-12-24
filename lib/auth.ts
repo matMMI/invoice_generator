@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { Pool } from "pg";
 import { username } from "better-auth/plugins";
+import bcrypt from "bcryptjs";
 
 export const auth = betterAuth({
   basePath: "/auth",
@@ -10,6 +11,20 @@ export const auth = betterAuth({
   plugins: [username()],
   emailAndPassword: {
     enabled: true,
+    password: {
+      hash: async (password: string) => {
+        return bcrypt.hashSync(password, 12);
+      },
+      verify: async ({
+        hash,
+        password,
+      }: {
+        hash: string;
+        password: string;
+      }) => {
+        return bcrypt.compareSync(password, hash);
+      },
+    },
   },
   user: {
     fields: {
@@ -17,6 +32,7 @@ export const auth = betterAuth({
       createdAt: "created_at",
       updatedAt: "updated_at",
       image: "image",
+      password: "password_hash", // Map to our DB column
     },
     additionalFields: {
       business_name: { type: "string", required: false },
