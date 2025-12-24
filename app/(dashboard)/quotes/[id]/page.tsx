@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { StatusBadge } from "@/components/status-badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +31,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   ArrowLeft,
@@ -38,10 +38,8 @@ import {
   Trash2,
   FileDown,
   Loader2,
-  Calendar,
   User,
-  Hash,
-  Share2,
+  Send,
   Copy,
   Check,
 } from "lucide-react";
@@ -55,7 +53,10 @@ import {
 import { getClient, Client } from "@/lib/api/clients";
 import { generateQuotePdf } from "@/lib/api/pdf";
 import { toast } from "sonner";
+import { useGlobalActivity } from "@/components/providers/global-activity-provider";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 export default function QuoteDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -70,15 +71,16 @@ export default function QuoteDetailPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [lastChecked, setLastChecked] = useState<string | null>(null);
-
+  const { lastUpdate, refreshData } = useGlobalActivity();
   useEffect(() => {
     async function load() {
       try {
         const quoteData = await getQuote(quoteId);
         setQuote(quoteData);
-        const clientData = await getClient(quoteData.client_id);
-        setClient(clientData);
+        if (!client || client.id !== quoteData.client_id) {
+          const clientData = await getClient(quoteData.client_id);
+          setClient(clientData);
+        }
       } catch (e) {
         console.error(e);
         toast.error("Failed to load quote");
@@ -87,54 +89,7 @@ export default function QuoteDetailPage() {
       }
     }
     load();
-  }, [quoteId]);
-
-  // Polling: Automatically check status every 5s if quote is SENT
-  useEffect(() => {
-    if (!quote || quote.status !== QuoteStatus.SENT) return;
-
-    const interval = setInterval(async () => {
-      try {
-        // Manually fetch to force cache busting since getQuote helper was reverted
-        const session = await authClient.getSession();
-        const token = session.data?.session.token;
-        const res = await fetch(
-          `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/api/quotes/${quoteId}?_t=${Date.now()}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            cache: "no-store",
-          }
-        );
-        if (!res.ok) return;
-        const updatedQuote: Quote = await res.json();
-
-        console.log(
-          "Polling check at",
-          new Date().toLocaleTimeString(),
-          updatedQuote.status
-        );
-        setLastChecked(new Date().toLocaleTimeString());
-
-        // If status changed to SIGNED or ACCEPTED, update UI
-        if (
-          updatedQuote.status === QuoteStatus.SIGNED ||
-          updatedQuote.status === QuoteStatus.ACCEPTED
-        ) {
-          setQuote(updatedQuote);
-          toast.success("Le devis a été signé par le client !", {
-            duration: 5000,
-            icon: <Check className="h-5 w-5 text-green-500" />,
-          });
-        }
-      } catch (error) {
-        // Silent error
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [quote, quoteId]);
+  }, [quoteId, lastUpdate]);
 
   const handleStatusChange = async (newStatus: QuoteStatus) => {
     if (!quote) return;
@@ -143,6 +98,7 @@ export default function QuoteDetailPage() {
       const updated = await updateQuote(quote.id, { status: newStatus });
       setQuote(updated);
       toast.success(`Statut mis à jour : ${newStatus}`);
+      refreshData();
     } catch (e) {
       toast.error("Échec de la mise à jour du statut");
     } finally {
@@ -198,7 +154,6 @@ export default function QuoteDetailPage() {
       setShareUrl(fullUrl);
       setShareDialogOpen(true);
 
-      // Update local state to SENT to trigger polling immediately
       if (quote.status === QuoteStatus.DRAFT) {
         setQuote({ ...quote, status: QuoteStatus.SENT });
         toast.success("Statut passé à 'Envoyé' automatiquement");
@@ -227,23 +182,6 @@ export default function QuoteDetailPage() {
       style: "currency",
       currency: quote?.currency || "EUR",
     });
-  };
-
-  const getStatusVariant = (status: QuoteStatus) => {
-    switch (status) {
-      case QuoteStatus.DRAFT:
-        return "secondary";
-      case QuoteStatus.SENT:
-        return "warning";
-      case QuoteStatus.SIGNED:
-        return "info";
-      case QuoteStatus.ACCEPTED:
-        return "default";
-      case QuoteStatus.REJECTED:
-        return "destructive";
-      default:
-        return "secondary";
-    }
   };
 
   if (loading) {
@@ -385,22 +323,30 @@ export default function QuoteDetailPage() {
               <CardTitle>Statut</CardTitle>
             </CardHeader>
             <CardContent>
-              <Select
-                value={quote.status}
-                onValueChange={(v) => handleStatusChange(v as QuoteStatus)}
-                disabled={statusUpdating}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={QuoteStatus.DRAFT}>Brouillon</SelectItem>
-                  <SelectItem value={QuoteStatus.SENT}>Envoyé</SelectItem>
-                  <SelectItem value={QuoteStatus.SIGNED}>Signé</SelectItem>
-                  <SelectItem value={QuoteStatus.ACCEPTED}>Accepté</SelectItem>
-                  <SelectItem value={QuoteStatus.REJECTED}>Refusé</SelectItem>
-                </SelectContent>
-              </Select>
+              {quote.status === QuoteStatus.SIGNED ? (
+                <div className="flex justify-center py-2">
+                  <StatusBadge status={quote.status} className="scale-125" />
+                </div>
+              ) : (
+                <Select
+                  value={quote.status}
+                  onValueChange={(v) => handleStatusChange(v as QuoteStatus)}
+                  disabled={statusUpdating}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={QuoteStatus.DRAFT}>Brouillon</SelectItem>
+                    <SelectItem value={QuoteStatus.SENT}>Envoyé</SelectItem>
+                    <SelectItem value={QuoteStatus.SIGNED}>Signé</SelectItem>
+                    <SelectItem value={QuoteStatus.ACCEPTED}>
+                      Accepté
+                    </SelectItem>
+                    <SelectItem value={QuoteStatus.REJECTED}>Refusé</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
               <div className="mt-4">
                 <Button
                   variant="outline"
@@ -411,9 +357,13 @@ export default function QuoteDetailPage() {
                   {sharing ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <Share2 className="mr-2 h-4 w-4" />
+                    <Send className="mr-2 h-4 w-4" />
                   )}
-                  {sharing ? "Génération..." : "Faire signer le devis"}
+                  {sharing
+                    ? "Génération..."
+                    : quote.status === QuoteStatus.SIGNED
+                    ? "Devis signé"
+                    : "Faire signer le devis"}
                 </Button>
               </div>
             </CardContent>

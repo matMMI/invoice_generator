@@ -9,12 +9,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { useGlobalActivity } from "@/components/providers/global-activity-provider";
+
 export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const LIMIT = 9;
+  const { lastUpdate } = useGlobalActivity();
 
   useEffect(() => {
     async function load() {
@@ -30,7 +33,7 @@ export default function QuotesPage() {
       }
     }
     load();
-  }, [currentPage]);
+  }, [currentPage, lastUpdate]);
 
   return (
     <div className="page-container">

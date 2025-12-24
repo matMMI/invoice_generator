@@ -11,6 +11,7 @@ interface FiscalStatusProps {
 }
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency } from "@/lib/formatters";
 
 export function FiscalStatus({ data, loading }: FiscalStatusProps) {
   if (loading || !data) {
@@ -43,18 +44,12 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
       </Card>
     );
   }
+
   const MICRO_CEILING = 77700;
   const VAT_THRESHOLD = 36800;
   const URSSAF_RATE = 0.211;
   const progress = (data.year_to_date / MICRO_CEILING) * 100;
   const urssafEstimate = data.quarter_to_date * URSSAF_RATE;
-
-  const formatCurrency = (amount: number) =>
-    amount.toLocaleString("fr-FR", {
-      style: "currency",
-      currency: "EUR",
-      maximumFractionDigits: 0,
-    });
 
   return (
     <Card className="h-full">

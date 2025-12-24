@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { JetBrains_Mono } from "next/font/google";
+import { Roboto } from "next/font/google";
 
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-roboto",
+});
 
 export const metadata: Metadata = {
   title: "Devis Generator",
@@ -17,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={jetbrainsMono.className}>
+      <body className={roboto.className}>
         {children}
         <Toaster />
       </body>

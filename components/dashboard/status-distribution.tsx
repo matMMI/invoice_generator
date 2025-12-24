@@ -34,11 +34,11 @@ const chartConfig = {
   },
   [QuoteStatus.SENT]: {
     label: "Envoyé",
-    color: "hsl(45 93% 47%)", // Amber/Oracle matching warning variant
+    color: "hsl(45 93% 47%)",
   },
   [QuoteStatus.SIGNED]: {
     label: "Signé",
-    color: "hsl(221 83% 53%)", // Blue/Info matching info variant
+    color: "hsl(221 83% 53%)",
   },
   [QuoteStatus.DRAFT]: {
     label: "Brouillon",

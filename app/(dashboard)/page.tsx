@@ -20,9 +20,12 @@ import { Overview } from "@/components/dashboard/overview";
 import { StatusDistribution } from "@/components/dashboard/status-distribution";
 import { FiscalStatus } from "@/components/dashboard/fiscal-status";
 
+import { useGlobalActivity } from "@/components/providers/global-activity-provider";
+
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const { lastUpdate } = useGlobalActivity();
 
   useEffect(() => {
     async function load() {
@@ -36,7 +39,7 @@ export default function DashboardPage() {
       }
     }
     load();
-  }, []);
+  }, [lastUpdate]);
 
   const formatCurrency = (amount: number, currency: string) => {
     return amount.toLocaleString("fr-FR", {

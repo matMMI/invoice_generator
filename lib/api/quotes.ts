@@ -17,9 +17,9 @@ export enum QuoteStatus {
 }
 
 export interface QuoteItem {
-  id?: string; // Optional for new items before save
+  id?: string;
   description: string;
-  quantity: number; // Using number for frontend, backend handles Decimal
+  quantity: number;
   unit_price: number;
   total?: number;
   order?: number;
@@ -40,13 +40,9 @@ export interface Quote {
 
   notes?: string;
   payment_terms?: string;
-
   created_at: string;
   updated_at: string;
-
   items: QuoteItem[];
-
-  // Electronic Signature
   share_token?: string;
   signed_at?: string;
   signer_name?: string;
@@ -119,7 +115,7 @@ export async function getQuote(id: string): Promise<Quote> {
   const token = session.data?.session.token;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/quotes/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/quotes/${id}?t=${Date.now()}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
