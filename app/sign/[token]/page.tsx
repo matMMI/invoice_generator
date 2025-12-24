@@ -15,7 +15,13 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { CheckCircle, FileText, AlertCircle, Loader2 } from "lucide-react";
+import {
+  CheckCircle,
+  FileText,
+  AlertCircle,
+  Loader2,
+  Download,
+} from "lucide-react";
 
 interface QuoteItem {
   description: string;
@@ -175,9 +181,19 @@ export default function SignQuotePage() {
               Devis n°{quote.quote_number} •{" "}
               {formatCurrency(quote.total, quote.currency)}
             </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Vous pouvez fermer cette page.
+            <p className="text-sm text-muted-foreground mt-2 mb-6">
+              Une copie de ce document est conservée.
             </p>
+            <Button variant="outline" className="w-full" asChild>
+              <a
+                href={`${API_BASE_URL}/api/public/quotes/${token}/pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Télécharger le devis signé
+              </a>
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -188,12 +204,24 @@ export default function SignQuotePage() {
     <div className="min-h-screen bg-muted/30 py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <FileText className="h-12 w-12 text-primary mx-auto mb-2" />
-          <h1 className="text-2xl font-bold">Signature de Devis</h1>
-          <p className="text-muted-foreground">
-            Veuillez vérifier les détails et signer ci-dessous
-          </p>
+        <div className="flex flex-col items-center justify-center text-center mb-8 space-y-4">
+          <FileText className="h-12 w-12 text-primary" />
+          <div>
+            <h1 className="text-2xl font-bold">Signature de Devis</h1>
+            <p className="text-muted-foreground">
+              Veuillez vérifier les détails et signer ci-dessous
+            </p>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <a
+              href={`${API_BASE_URL}/api/public/quotes/${token}/pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Télécharger le PDF
+            </a>
+          </Button>
         </div>
 
         <div className="space-y-8">
