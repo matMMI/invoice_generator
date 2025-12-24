@@ -45,6 +45,12 @@ export interface Quote {
   updated_at: string;
 
   items: QuoteItem[];
+
+  // Electronic Signature
+  share_token?: string;
+  signed_at?: string;
+  signer_name?: string;
+  signer_ip?: string;
 }
 
 export interface CreateQuoteData {

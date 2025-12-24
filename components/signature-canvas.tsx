@@ -15,9 +15,27 @@ export function SignatureCanvas({
   width = 400,
   height = 200,
 }: SignatureCanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [canvasWidth, setCanvasWidth] = useState(width);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentBoxSize) {
+          setCanvasWidth(entry.contentRect.width);
+        }
+      }
+    });
+
+    resizeObserver.observe(container);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   // Initialize canvas
   useEffect(() => {
@@ -27,11 +45,14 @@ export function SignatureCanvas({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Use dynamic width or fallback to prop
+    const finalWidth = canvasWidth || width || 400;
+
     // Set up canvas for high DPI
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = width * dpr;
+    canvas.width = finalWidth * dpr;
     canvas.height = height * dpr;
-    canvas.style.width = `${width}px`;
+    canvas.style.width = `${finalWidth}px`;
     canvas.style.height = `${height}px`;
     ctx.scale(dpr, dpr);
 
@@ -43,8 +64,8 @@ export function SignatureCanvas({
 
     // Fill with white background
     ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, width, height);
-  }, [width, height]);
+    ctx.fillRect(0, 0, finalWidth, height);
+  }, [canvasWidth, width, height]);
 
   const getCoordinates = useCallback(
     (e: React.MouseEvent | React.TouchEvent) => {
@@ -118,14 +139,17 @@ export function SignatureCanvas({
     const ctx = canvas?.getContext("2d");
     if (!ctx || !canvas) return;
 
+    // Use current dynamic width for clearing
+    const currentWidth = canvasWidth || width || 400;
+
     ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, currentWidth, height);
     setHasSignature(false);
     onSignatureChange(null);
-  }, [width, height, onSignatureChange]);
+  }, [width, height, canvasWidth, onSignatureChange]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" ref={containerRef}>
       <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg overflow-hidden bg-white w-full">
         <canvas
           ref={canvasRef}

@@ -70,6 +70,7 @@ export default function QuoteDetailPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [lastChecked, setLastChecked] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -108,6 +109,13 @@ export default function QuoteDetailPage() {
         );
         if (!res.ok) return;
         const updatedQuote: Quote = await res.json();
+
+        console.log(
+          "Polling check at",
+          new Date().toLocaleTimeString(),
+          updatedQuote.status
+        );
+        setLastChecked(new Date().toLocaleTimeString());
 
         // If status changed to SIGNED or ACCEPTED, update UI
         if (
@@ -189,6 +197,12 @@ export default function QuoteDetailPage() {
       const fullUrl = `${window.location.origin}${data.share_url}`;
       setShareUrl(fullUrl);
       setShareDialogOpen(true);
+
+      // Update local state to SENT to trigger polling immediately
+      if (quote.status === QuoteStatus.DRAFT) {
+        setQuote({ ...quote, status: QuoteStatus.SENT });
+        toast.success("Statut passé à 'Envoyé' automatiquement");
+      }
     } catch (e: any) {
       toast.error(e.message || "Échec du partage");
     } finally {
