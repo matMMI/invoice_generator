@@ -81,3 +81,16 @@ export async function updateSettings(data: SettingsUpdate): Promise<Settings> {
   }
   return response.json();
 }
+
+export async function resetAccount(): Promise<void> {
+  const headers = await getAuthHeaders();
+
+  const response = await fetch(`${API_BASE}/api/settings/reset`, {
+    method: "DELETE",
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to reset account: ${response.statusText}`);
+  }
+}

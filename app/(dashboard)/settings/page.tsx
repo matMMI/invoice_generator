@@ -16,6 +16,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -26,7 +37,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getSettings, updateSettings } from "@/lib/api/settings";
+import { getSettings, updateSettings, resetAccount } from "@/lib/api/settings";
 
 const settingsSchema = z.object({
   company_name: z.string().min(1, "Le nom de l'entreprise est requis"),
@@ -395,6 +406,61 @@ export default function SettingsPage() {
           </div>
         </form>
       </Form>
+
+      <div className="mt-8 border-t pt-8">
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardHeader>
+            <CardTitle className="text-destructive">Zone de Danger</CardTitle>
+            <CardDescription className="text-destructive/80">
+              Actions irréversibles concernant vos données.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                  Réinitialiser toutes les données
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Êtes-vous absolument sûr ?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Cette action est <strong>irréversible</strong>. Elle
+                    supprimera définitivement :
+                    <ul className="list-disc list-inside mt-2 mb-2">
+                      <li>Tous vos devis et factures</li>
+                      <li>Tous vos clients</li>
+                    </ul>
+                    Votre compte utilisateur et les paramètres ci-dessus seront
+                    conservés.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={async () => {
+                      try {
+                        await resetAccount();
+                        toast.success("Compte réinitialisé avec succès", {
+                          description: "Toutes vos données ont été effacées.",
+                        });
+                      } catch (error) {
+                        toast.error("Erreur lors de la réinitialisation");
+                      }
+                    }}
+                  >
+                    Confirmer la suppression
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
