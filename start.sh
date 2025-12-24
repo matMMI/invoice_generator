@@ -1,5 +1,4 @@
-
-reset && rm -rf .next && rm -rf node_modules
+reset && rm -rf .next &&
 pnpm install
 echo "Running Frontend Tests..."
 pnpm test
