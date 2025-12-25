@@ -82,6 +82,7 @@ type SettingsFormValues = z.infer<typeof settingsSchema>;
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
@@ -461,32 +462,44 @@ export default function SettingsPage() {
                   <AlertDialogTitle>
                     Êtes-vous absolument sûr ?
                   </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Cette action est <strong>irréversible</strong>. Elle
-                    supprimera définitivement :
-                    <ul className="list-disc list-inside mt-2 mb-2">
-                      <li>Tous vos devis et factures</li>
-                      <li>Tous vos clients</li>
-                    </ul>
-                    Votre compte utilisateur sera conservé.
+                  <AlertDialogDescription asChild>
+                    <div className="text-sm text-muted-foreground">
+                      Cette action est <strong>irréversible</strong>. Elle
+                      supprimera définitivement :
+                      <ul className="list-disc list-inside mt-2 mb-2">
+                        <li>Tous vos devis et factures</li>
+                        <li>Tous vos clients</li>
+                      </ul>
+                      Votre compte utilisateur sera conservé.
+                    </div>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogCancel disabled={resetting}>
+                    Annuler
+                  </AlertDialogCancel>
                   <AlertDialogAction
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    onClick={async () => {
+                    className="bg-destructive hover:bg-destructive/90"
+                    disabled={resetting}
+                    onClick={async (e) => {
+                      e.preventDefault();
                       try {
+                        setResetting(true);
                         await resetAccount();
                         toast.success("Compte réinitialisé avec succès", {
                           description: "Toutes vos données ont été effacées.",
                         });
                       } catch (error) {
                         toast.error("Erreur lors de la réinitialisation");
+                      } finally {
+                        setResetting(false);
                       }
                     }}
                   >
-                    Confirmer la suppression
+                    {resetting && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    {resetting ? "Suppression..." : "Confirmer la suppression"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

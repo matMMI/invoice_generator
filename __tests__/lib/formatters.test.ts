@@ -3,22 +3,18 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 describe("Formatters", () => {
   describe("formatCurrency", () => {
     it("should format EUR currency correctly with French locale", () => {
-      // Note: non-breaking space (NBSP) is often \u00a0 or \u202f depending on browser/node env
-      // normalize() helps to compare strings safely.
       const result = formatCurrency(1000, "EUR");
       expect(result.replace(/\s/g, " ")).toBe("1 000,00 €");
-    });
-
-    it("should format other currencies", () => {
-      // USD often puts symbol before or after depending on locale fr-FR -> 1 000,00 $US usually or $
-      const result = formatCurrency(50.5, "USD");
-      expect(result).toContain("50,50");
-      expect(result).toMatch(/US\$|\$/);
     });
 
     it("should handle zero", () => {
       const result = formatCurrency(0, "EUR");
       expect(result.replace(/\s/g, " ")).toBe("0,00 €");
+    });
+
+    it("should default to EUR", () => {
+      const result = formatCurrency(100);
+      expect(result).toContain("€");
     });
   });
 

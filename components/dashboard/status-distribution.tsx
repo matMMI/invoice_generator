@@ -10,6 +10,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
+
 import {
   Card,
   CardContent,
@@ -17,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { QuoteStatus } from "@/lib/api/quotes";
 
 interface StatusDistributionProps {
@@ -68,14 +70,14 @@ export function StatusDistribution({ data, loading }: StatusDistributionProps) {
 
   if (loading || !data) {
     return (
-      <Card className="flex flex-col w-full h-full overflow-hidden">
+      <Card className="flex flex-col w-full h-full overflow-hidden border-0 shadow-none bg-transparent">
         <CardHeader className="items-center pb-0">
           <CardTitle>Statut des Devis</CardTitle>
           <CardDescription>
             <Skeleton className="h-4 w-32" />
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 pb-0 overflow-hidden flex items-center justify-center">
+        <CardContent className="flex-1 pb-0 overflow-visible flex items-center justify-center">
           <Skeleton className="h-[200px] w-[200px] rounded-full" />
         </CardContent>
       </Card>
@@ -83,15 +85,15 @@ export function StatusDistribution({ data, loading }: StatusDistributionProps) {
   }
 
   return (
-    <Card className="flex flex-col w-full h-full overflow-hidden">
+    <Card className="flex flex-col w-full h-full overflow-hidden border-0 shadow-none bg-transparent">
       <CardHeader className="items-center pb-0">
         <CardTitle>Statut des Devis</CardTitle>
         <CardDescription>Répartition par statut</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0 overflow-hidden">
+      <CardContent className="flex-1 pb-0 overflow-visible">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto mx-auto h-[250px] w-full"
+          className="aspect-auto mx-auto h-full w-full min-h-[250px]"
         >
           <PieChart>
             <ChartTooltip

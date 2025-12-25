@@ -54,6 +54,7 @@ import { getClient, Client } from "@/lib/api/clients";
 import { generateQuotePdf } from "@/lib/api/pdf";
 import { toast } from "sonner";
 import { useGlobalActivity } from "@/components/providers/global-activity-provider";
+import useSWR from "swr";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -61,9 +62,7 @@ export default function QuoteDetailPage() {
   const router = useRouter();
   const params = useParams();
   const quoteId = params.id as string;
-  const [quote, setQuote] = useState<Quote | null>(null);
   const [client, setClient] = useState<Client | null>(null);
-  const [loading, setLoading] = useState(true);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
@@ -72,31 +71,39 @@ export default function QuoteDetailPage() {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const { notifyChange } = useGlobalActivity();
+
+  // Use SWR for quote fetching with 5-second polling for real-time updates
+  const {
+    data: quote,
+    isLoading: loading,
+    mutate: mutateQuote,
+  } = useSWR<Quote>(
+    quoteId ? `/api/quotes/${quoteId}` : null,
+    () => getQuote(quoteId),
+    { refreshInterval: 5000 }
+  );
+
+  // Fetch client when quote changes
   useEffect(() => {
-    async function load() {
-      try {
-        const quoteData = await getQuote(quoteId);
-        setQuote(quoteData);
-        if (!client || client.id !== quoteData.client_id) {
-          const clientData = await getClient(quoteData.client_id);
+    async function loadClient() {
+      if (quote && (!client || client.id !== quote.client_id)) {
+        try {
+          const clientData = await getClient(quote.client_id);
           setClient(clientData);
+        } catch (e) {
+          console.error("Failed to load client", e);
         }
-      } catch (e) {
-        console.error(e);
-        toast.error("Failed to load quote");
-      } finally {
-        setLoading(false);
       }
     }
-    load();
-  }, [quoteId]);
+    loadClient();
+  }, [quote, client]);
 
   const handleStatusChange = async (newStatus: QuoteStatus) => {
     if (!quote) return;
     setStatusUpdating(true);
     try {
       const updated = await updateQuote(quote.id, { status: newStatus });
-      setQuote(updated);
+      mutateQuote(updated, false);
       toast.success(`Statut mis à jour : ${newStatus}`);
       notifyChange("quote_updated");
     } catch (e) {
@@ -155,7 +162,7 @@ export default function QuoteDetailPage() {
       setShareDialogOpen(true);
 
       if (quote.status === QuoteStatus.DRAFT) {
-        setQuote({ ...quote, status: QuoteStatus.SENT });
+        mutateQuote({ ...quote, status: QuoteStatus.SENT }, false);
         notifyChange("quote_updated");
         toast.success("Statut passé à 'Envoyé' automatiquement");
       }

@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Search, X, Users } from "lucide-react";
 import { toast } from "sonner";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -210,26 +211,13 @@ export default function ClientsPage() {
         </div>
       )}
 
-      {!loading && clients.length > 0 && totalPages > 1 && (
-        <div className="flex justify-center items-center mt-8 space-x-2">
-          <Button
-            variant="outline"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          >
-            Précédent
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Page {currentPage} sur {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Suivant
-          </Button>
-        </div>
+      {!loading && clients.length > 0 && (
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          className="mt-8"
+        />
       )}
     </div>
   );

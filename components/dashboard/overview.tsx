@@ -23,7 +23,7 @@ interface OverviewProps {
 const chartConfig = {
   total: {
     label: "Chiffre d'affaires",
-    color: "hsl(var(--primary))",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
@@ -32,7 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function Overview({ data, loading }: OverviewProps) {
   if (loading || !data) {
     return (
-      <Card className="w-full h-full overflow-hidden">
+      <Card className="w-full h-full overflow-hidden border-0 shadow-none bg-transparent">
         <CardHeader>
           <CardTitle>Aperçu</CardTitle>
           <CardDescription>
@@ -55,7 +55,7 @@ export function Overview({ data, loading }: OverviewProps) {
   }
 
   return (
-    <Card className="w-full h-full overflow-hidden">
+    <Card className="w-full h-full overflow-hidden border-0 shadow-none bg-transparent">
       <CardHeader>
         <CardTitle>Aperçu</CardTitle>
         <CardDescription>
@@ -86,7 +86,7 @@ export function Overview({ data, loading }: OverviewProps) {
             />
             <Bar
               dataKey="total"
-              fill="hsl(var(--primary))"
+              fill="var(--color-total)"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

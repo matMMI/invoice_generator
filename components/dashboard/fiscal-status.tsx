@@ -16,7 +16,7 @@ import { formatCurrency } from "@/lib/formatters";
 export function FiscalStatus({ data, loading }: FiscalStatusProps) {
   if (loading || !data) {
     return (
-      <Card className="h-full">
+      <Card className="h-full border-0 shadow-none bg-transparent">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium flex items-center justify-between">
             <Skeleton className="h-4 w-48" />
@@ -47,12 +47,12 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
 
   const MICRO_CEILING = 77700;
   const VAT_THRESHOLD = 36800;
-  const URSSAF_RATE = 0.211;
+  const URSSAF_RATE = 0.212;
   const progress = (data.year_to_date / MICRO_CEILING) * 100;
   const urssafEstimate = data.quarter_to_date * URSSAF_RATE;
 
   return (
-    <Card className="h-full">
+    <Card className="h-full border-0 shadow-none bg-transparent">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium flex items-center justify-between">
           <span>Suivi Micro-Entreprise ({data.current_year})</span>

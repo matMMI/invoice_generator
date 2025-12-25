@@ -8,6 +8,7 @@ import { getQuotes, Quote } from "@/lib/api/quotes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/status-badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
@@ -122,26 +123,13 @@ export default function QuotesPage() {
         </div>
       )}
 
-      {!loading && quotes.length > 0 && totalPages > 1 && (
-        <div className="flex justify-center items-center mt-8 space-x-2">
-          <Button
-            variant="outline"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          >
-            Précédent
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Page {currentPage} sur {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Suivant
-          </Button>
-        </div>
+      {!loading && quotes.length > 0 && (
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          className="mt-8"
+        />
       )}
     </div>
   );

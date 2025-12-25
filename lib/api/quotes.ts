@@ -2,10 +2,6 @@ import { authClient } from "@/lib/auth-client";
 
 export enum Currency {
   EUR = "EUR",
-  USD = "USD",
-  GBP = "GBP",
-  CHF = "CHF",
-  CAD = "CAD",
 }
 
 export enum QuoteStatus {
