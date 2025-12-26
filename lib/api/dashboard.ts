@@ -45,10 +45,7 @@ export interface DashboardMetrics {
   fiscal_revenue: FiscalRevenue;
 }
 
-export async function getDashboardMetrics(
-  page: number = 1,
-  limit: number = 5
-): Promise<DashboardMetrics> {
+export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   const session = await authClient.getSession();
   const token = session.data?.session?.token;
 
@@ -57,8 +54,6 @@ export async function getDashboardMetrics(
   }
 
   const url = new URL(`${API_BASE}/api/dashboard/metrics`);
-  url.searchParams.set("page", page.toString());
-  url.searchParams.set("limit", limit.toString());
 
   const response = await fetch(url.toString(), {
     headers: {

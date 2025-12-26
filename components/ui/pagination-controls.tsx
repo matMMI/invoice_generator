@@ -78,7 +78,6 @@ export function PaginationControls({
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href="#"
             onClick={(e) => {
               e.preventDefault();
               if (currentPage > 1) onPageChange(currentPage - 1);
@@ -96,7 +95,6 @@ export function PaginationControls({
               <PaginationEllipsis />
             ) : (
               <PaginationLink
-                href="#"
                 isActive={page === currentPage}
                 onClick={(e) => {
                   e.preventDefault();
@@ -111,7 +109,6 @@ export function PaginationControls({
 
         <PaginationItem>
           <PaginationNext
-            href="#"
             onClick={(e) => {
               e.preventDefault();
               if (currentPage < totalPages) onPageChange(currentPage + 1);

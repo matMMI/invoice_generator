@@ -26,6 +26,7 @@ export interface Quote {
   quote_number: string;
   user_id: string;
   client_id: string;
+  client_name?: string;
   status: QuoteStatus;
   currency: Currency;
 
