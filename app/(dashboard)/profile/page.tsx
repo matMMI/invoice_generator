@@ -5,9 +5,8 @@ import { authClient } from "@/lib/auth-client";
 
 export default function ProfilePage() {
   const { data: session } = authClient.useSession();
-
   if (!session) {
-    return null; // Or loading spinner / redirect handled by middleware/layout
+    return null;
   }
 
   return (
@@ -18,9 +17,7 @@ export default function ProfilePage() {
           Gérez vos informations personnelles et votre sécurité.
         </p>
       </div>
-      <div className="max-w-2xl">
-        <UserProfileForm user={session.user} />
-      </div>
+      <UserProfileForm user={session.user} />
     </div>
   );
 }

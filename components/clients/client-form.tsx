@@ -39,72 +39,78 @@ export function ClientForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
 
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium mb-1">
-          Name *
-        </label>
-        <input
-          id="name"
-          type="text"
-          required
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium mb-1">
+            Nom *
+          </label>
+          <input
+            id="name"
+            type="text"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full px-3 py-2 border rounded-md bg-background"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1">
-          Email *
-        </label>
-        <input
-          id="email"
-          type="email"
-          required
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium mb-1">
+            Email *
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            className="w-full px-3 py-2 border rounded-md bg-background"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="company" className="block text-sm font-medium mb-1">
-          Company
-        </label>
-        <input
-          id="company"
-          type="text"
-          value={formData.company}
-          onChange={(e) =>
-            setFormData({ ...formData, company: e.target.value })
-          }
-          className="w-full px-3 py-2 border rounded-md"
-        />
-      </div>
+        <div>
+          <label htmlFor="company" className="block text-sm font-medium mb-1">
+            Entreprise
+          </label>
+          <input
+            id="company"
+            type="text"
+            value={formData.company}
+            onChange={(e) =>
+              setFormData({ ...formData, company: e.target.value })
+            }
+            className="w-full px-3 py-2 border rounded-md bg-background"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="phone" className="block text-sm font-medium mb-1">
-          Phone
-        </label>
-        <input
-          id="phone"
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          className="w-full px-3 py-2 border rounded-md"
-        />
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium mb-1">
+            Téléphone
+          </label>
+          <input
+            id="phone"
+            type="tel"
+            value={formData.phone}
+            onChange={(e) =>
+              setFormData({ ...formData, phone: e.target.value })
+            }
+            className="w-full px-3 py-2 border rounded-md bg-background"
+          />
+        </div>
       </div>
 
       <div>
         <label htmlFor="address" className="block text-sm font-medium mb-1">
-          Address
+          Adresse
         </label>
         <textarea
           id="address"
@@ -113,40 +119,49 @@ export function ClientForm({
           onChange={(e) =>
             setFormData({ ...formData, address: e.target.value })
           }
-          className="w-full px-3 py-2 border rounded-md"
+          className="w-full px-3 py-2 border rounded-md bg-background"
         />
       </div>
 
-      <div>
-        <label htmlFor="vat_number" className="block text-sm font-medium mb-1">
-          VAT Number
-        </label>
-        <input
-          id="vat_number"
-          type="text"
-          value={formData.vat_number}
-          onChange={(e) =>
-            setFormData({ ...formData, vat_number: e.target.value })
-          }
-          className="w-full px-3 py-2 border rounded-md"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label
+            htmlFor="vat_number"
+            className="block text-sm font-medium mb-1"
+          >
+            N° TVA
+          </label>
+          <input
+            id="vat_number"
+            type="text"
+            value={formData.vat_number}
+            onChange={(e) =>
+              setFormData({ ...formData, vat_number: e.target.value })
+            }
+            className="w-full px-3 py-2 border rounded-md bg-background"
+          />
+        </div>
       </div>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex gap-3 justify-end pt-4 border-t">
         <button
           type="button"
           onClick={onCancel}
           disabled={loading}
-          className="px-4 py-2 border rounded-md"
+          className="px-4 py-2 border rounded-md hover:bg-muted disabled:opacity-50"
         >
-          Cancel
+          Annuler
         </button>
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
         >
-          {loading ? "Saving..." : initialData?.id ? "Update" : "Create"}
+          {loading
+            ? "Enregistrement..."
+            : initialData?.id
+            ? "Mettre à jour"
+            : "Créer"}
         </button>
       </div>
     </form>

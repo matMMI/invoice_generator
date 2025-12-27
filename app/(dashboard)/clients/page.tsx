@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { SearchHeader } from "@/components/dashboard/search-header";
+import { useGlobalActivity } from "@/components/providers/global-activity-provider";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -22,12 +23,12 @@ export default function ClientsPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const LIMIT = 9; // Grid layout 3x3 nicely
-
+  const LIMIT = 9;
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { notifyChange } = useGlobalActivity();
 
   const fetchClients = async (searchQuery?: string, page: number = 1) => {
     try {
@@ -63,6 +64,7 @@ export default function ClientsPage() {
       setShowForm(false);
       toast.success("Client créé avec succès");
       fetchClients(search);
+      notifyChange("client_created");
     } catch (err: any) {
       toast.error(err.message || "Échec de la création du client");
     }
@@ -75,6 +77,7 @@ export default function ClientsPage() {
         setEditingClient(null);
         toast.success("Client mis à jour avec succès");
         fetchClients(search);
+        notifyChange("client_updated");
       } catch (err: any) {
         toast.error(err.message || "Échec de la mise à jour du client");
       }
@@ -86,6 +89,7 @@ export default function ClientsPage() {
       await deleteClient(id);
       toast.success("Client supprimé avec succès");
       fetchClients(search, currentPage);
+      notifyChange("client_deleted");
     } catch (err: any) {
       toast.error(err.message || "Échec de la suppression du client");
     }
@@ -93,7 +97,7 @@ export default function ClientsPage() {
 
   if (showForm || editingClient) {
     return (
-      <div className="max-w-2xl mx-auto p-6">
+      <div className="page-container">
         <h1 className="text-2xl font-bold mb-6">
           {editingClient ? "Modifier le Client" : "Nouveau Client"}
         </h1>

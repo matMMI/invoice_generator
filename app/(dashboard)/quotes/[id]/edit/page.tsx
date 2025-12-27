@@ -33,7 +33,7 @@ export default function EditQuotePage() {
 
   if (loading) {
     return (
-      <div className="container py-10 flex justify-center">
+      <div className="page-container max-w-4xl mx-auto flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
@@ -41,27 +41,27 @@ export default function EditQuotePage() {
 
   if (!quote) {
     return (
-      <div className="container py-10 text-center">
-        <p className="text-muted-foreground">Quote not found</p>
+      <div className="page-container max-w-4xl mx-auto text-center flex flex-col justify-center items-center min-h-[50vh]">
+        <p className="text-muted-foreground">Devis introuvable</p>
         <Button variant="link" onClick={() => router.push("/quotes")}>
-          Back to quotes
+          Retour aux devis
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="container py-10">
+    <div className="page-container ">
       <div className="flex items-center gap-4 mb-8">
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Edit {quote.quote_number}
+            Modifier le devis {quote.quote_number}
           </h1>
           <p className="text-muted-foreground">
-            Modify the quote details below.
+            Modifiez les détails du devis ci-dessous.
           </p>
         </div>
       </div>

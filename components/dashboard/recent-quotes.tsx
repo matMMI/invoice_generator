@@ -35,7 +35,8 @@ export function RecentQuotes() {
 
   useEffect(() => {
     const unsubscribe = onSyncMessage((msg) => {
-      if (msg.type.startsWith("quote_")) {
+      // Refetch when quotes change OR when clients change (name updates affect display)
+      if (msg.type.startsWith("quote_") || msg.type.startsWith("client_")) {
         mutate();
       }
     });

@@ -262,7 +262,7 @@
   --chart-3: oklch(0.67 0.16 58);
   --chart-4: oklch(0.56 0.15 49);
   --chart-5: oklch(0.47 0.12 46);
-  --radius: 0;
+  --radius: 0.5rem;
   --sidebar: oklch(0.985 0.002 247.839);
   --sidebar-foreground: oklch(0.13 0.028 261.692);
   --sidebar-primary: oklch(0.67 0.16 58);
@@ -399,7 +399,7 @@ button:disabled,
   }
 
   .stats-icon {
-    @apply h-8 w-8 md:h-10 md:w-10 rounded-full flex items-center justify-center;
+    @apply h-8 w-8 md:h-10 md:w-10 rounded-sm flex items-center justify-center;
   }
 
   .stats-icon-inner {

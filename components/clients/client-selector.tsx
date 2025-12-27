@@ -33,17 +33,28 @@ export function ClientSelector({ value, onChange }: ClientSelectorProps) {
     loadClients();
   }, []);
 
+  // Find the selected client to display its name
+  const selectedClient = clients.find((c) => c.id === value);
+
   return (
     <Select value={value} onValueChange={onChange} disabled={loading}>
-      <SelectTrigger className="w-[300px]">
+      <SelectTrigger className="w-full">
         <SelectValue
-          placeholder={loading ? "Loading clients..." : "Select a client"}
-        />
+          placeholder={loading ? "Chargement..." : "Sélectionner un client"}
+        >
+          {selectedClient
+            ? selectedClient.company || selectedClient.name
+            : loading
+            ? "Chargement..."
+            : value
+            ? "Client inconnu"
+            : "Sélectionner un client"}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {clients.length === 0 && !loading && (
           <div className="p-2 text-sm text-muted-foreground">
-            No clients found. Create one first.
+            Aucun client trouvé. Créez-en un d'abord.
           </div>
         )}
         {clients.map((client) => (

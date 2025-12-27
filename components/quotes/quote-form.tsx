@@ -24,7 +24,6 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
   const router = useRouter();
   const { notifyChange } = useGlobalActivity();
   const isEdit = mode === "edit";
-
   const {
     register,
     handleSubmit,
