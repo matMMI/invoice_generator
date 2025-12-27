@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight } from "lucide-react";
-import { PaginationControls } from "@/components/ui/pagination-controls";
+import { SearchHeader } from "@/components/dashboard/search-header";
 import { StatusBadge } from "@/components/status-badge";
 import { getQuotes } from "@/lib/api/quotes";
 import { onSyncMessage } from "@/lib/sync";
@@ -14,19 +14,25 @@ import useSWR from "swr";
 export function RecentQuotes() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [search, setSearch] = useState("");
   const LIMIT = 5;
 
   const {
     data,
     isLoading: loading,
     mutate,
-  } = useSWR(["recent-quotes", page], () => getQuotes(page, LIMIT), {
-    revalidateOnFocus: true,
-    dedupingInterval: 5000,
-    onSuccess: (data) => {
-      setTotalPages(Math.ceil((data?.total || 0) / LIMIT));
-    },
-  });
+  } = useSWR(
+    ["recent-quotes", page, search],
+    () => getQuotes(page, LIMIT, search),
+    {
+      revalidateOnFocus: true,
+      dedupingInterval: 5000,
+      onSuccess: (data) => {
+        setTotalPages(Math.ceil((data?.total || 0) / LIMIT));
+      },
+    }
+  );
+
   useEffect(() => {
     const unsubscribe = onSyncMessage((msg) => {
       if (msg.type.startsWith("quote_")) {
@@ -35,6 +41,18 @@ export function RecentQuotes() {
     });
     return unsubscribe;
   }, [mutate]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1);
+    mutate();
+  };
+
+  const clearSearch = () => {
+    setSearch("");
+    setPage(1);
+    mutate();
+  };
 
   const quotes = data?.quotes || [];
 
@@ -56,6 +74,18 @@ export function RecentQuotes() {
           </Button>
         </Link>
       </div>
+
+      <SearchHeader
+        value={search}
+        onChange={setSearch}
+        onSearch={handleSearch}
+        onClear={clearSearch}
+        placeholder="Rechercher un devis..."
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        loading={loading}
+      />
 
       <div className="space-y-0">
         {/* Table Header - Always visible */}
@@ -86,13 +116,22 @@ export function RecentQuotes() {
           // Empty State
           <div className="text-center py-6">
             <p className="text-muted-foreground text-sm mb-4">
-              Aucun devis pour le moment
+              {search
+                ? "Aucun résultat pour votre recherche"
+                : "Aucun devis pour le moment"}
             </p>
-            <Link href="/quotes/create">
-              <Button variant="outline" size="sm">
-                Créer votre premier devis
+            {!search && (
+              <Link href="/quotes/create">
+                <Button variant="outline" size="sm">
+                  Créer votre premier devis
+                </Button>
+              </Link>
+            )}
+            {search && (
+              <Button variant="outline" size="sm" onClick={clearSearch}>
+                Effacer la recherche
               </Button>
-            </Link>
+            )}
           </div>
         ) : (
           // Data Rows
@@ -121,16 +160,6 @@ export function RecentQuotes() {
           ))
         )}
       </div>
-
-      {/* Pagination - persists during loading thanks to totalPages state */}
-      {totalPages > 0 && (
-        <PaginationControls
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-          className="mt-4"
-        />
-      )}
     </div>
   );
 }

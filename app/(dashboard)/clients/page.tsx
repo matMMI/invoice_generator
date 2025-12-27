@@ -12,19 +12,16 @@ import {
 import { ClientCard } from "@/components/clients/client-card";
 import { ClientForm } from "@/components/clients/client-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Search, X, Users } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { toast } from "sonner";
-import { PaginationControls } from "@/components/ui/pagination-controls";
+import { SearchHeader } from "@/components/dashboard/search-header";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const LIMIT = 9; // Grid layout 3x3 nicely
 
   const [showForm, setShowForm] = useState(false);
@@ -135,36 +132,21 @@ export default function ClientsPage() {
         </Button>
       </div>
 
-      <form onSubmit={handleSearch} className="mb-6">
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Rechercher par nom ou email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button type="submit" variant="secondary">
-            Rechercher
-          </Button>
-          {search && (
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                setSearch("");
-                setCurrentPage(1);
-                fetchClients("", 1);
-              }}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </form>
+      <SearchHeader
+        value={search}
+        onChange={setSearch}
+        onSearch={handleSearch}
+        onClear={() => {
+          setSearch("");
+          setCurrentPage(1);
+          fetchClients("", 1);
+        }}
+        placeholder="Rechercher par nom ou email..."
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        loading={loading}
+      />
 
       {error && (
         <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg mb-4">
@@ -174,29 +156,35 @@ export default function ClientsPage() {
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card key={i}>
-              <CardHeader className="pb-2">
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-4 w-24 mt-1" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-4 w-48 mb-2" />
-                <Skeleton className="h-4 w-36" />
-              </CardContent>
-            </Card>
+          {Array.from({ length: LIMIT }).map((_, i) => (
+            <ClientCard key={i} isLoading={true} />
           ))}
         </div>
       ) : clients.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 border rounded-lg bg-muted/10">
           <Users className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium">Aucun client</h3>
+          <h3 className="text-lg font-medium">Aucun client trouvé</h3>
           <p className="text-muted-foreground mb-6">
-            Ajoutez votre premier client pour commencer.
+            {search
+              ? "Aucun résultat pour votre recherche."
+              : "Ajoutez votre premier client pour commencer."}
           </p>
-          <Button variant="outline" onClick={() => setShowForm(true)}>
-            Créer votre premier client
-          </Button>
+          {search ? (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearch("");
+                setCurrentPage(1);
+                fetchClients("", 1);
+              }}
+            >
+              Effacer la recherche
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={() => setShowForm(true)}>
+              Créer votre premier client
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -209,15 +197,6 @@ export default function ClientsPage() {
             />
           ))}
         </div>
-      )}
-
-      {!loading && clients.length > 0 && (
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          className="mt-8"
-        />
       )}
     </div>
   );

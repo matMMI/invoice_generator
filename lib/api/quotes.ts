@@ -23,10 +23,10 @@ export interface QuoteItem {
 
 export interface Quote {
   id: string;
-  quote_number: string;
   user_id: string;
-  client_id: string;
+  client_id?: string;
   client_name?: string;
+  quote_number: string;
   status: QuoteStatus;
   currency: Currency;
 
@@ -58,11 +58,42 @@ export interface CreateQuoteData {
 export interface UpdateQuoteData {
   client_id?: string;
   currency?: Currency;
-  status?: QuoteStatus;
   tax_rate?: number;
   notes?: string;
   payment_terms?: string;
   items?: QuoteItem[];
+  status?: QuoteStatus;
+}
+
+export async function getQuotes(
+  page: number = 1,
+  limit: number = 10,
+  search?: string
+): Promise<{ quotes: Quote[]; total: number }> {
+  const session = await authClient.getSession();
+  const token = session.data?.session.token;
+
+  const url = new URL("/api/quotes", process.env.NEXT_PUBLIC_API_URL || "");
+  url.searchParams.set("page", page.toString());
+  url.searchParams.set("limit", limit.toString());
+
+  if (search) {
+    url.searchParams.set("search", search);
+  }
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch quotes");
+  }
+
+  const data = await response.json();
+  return data;
 }
 
 export async function createQuote(data: CreateQuoteData): Promise<Quote> {
@@ -82,28 +113,6 @@ export async function createQuote(data: CreateQuoteData): Promise<Quote> {
     const error = await res.json();
     throw new Error(error.detail || "Failed to create quote");
   }
-
-  return res.json();
-}
-
-export async function getQuotes(
-  page: number = 1,
-  limit: number = 10
-): Promise<{ quotes: Quote[]; total: number }> {
-  const session = await authClient.getSession();
-  const token = session.data?.session.token;
-
-  const url = new URL(`${process.env.NEXT_PUBLIC_API_URL}/api/quotes`);
-  url.searchParams.set("page", page.toString());
-  url.searchParams.set("limit", limit.toString());
-
-  const res = await fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) throw new Error("Failed to fetch quotes");
   return res.json();
 }
 

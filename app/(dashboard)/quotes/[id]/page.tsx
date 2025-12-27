@@ -86,7 +86,11 @@ export default function QuoteDetailPage() {
   // Fetch client when quote changes
   useEffect(() => {
     async function loadClient() {
-      if (quote && (!client || client.id !== quote.client_id)) {
+      if (
+        quote &&
+        quote.client_id &&
+        (!client || client.id !== quote.client_id)
+      ) {
         try {
           const clientData = await getClient(quote.client_id);
           setClient(clientData);

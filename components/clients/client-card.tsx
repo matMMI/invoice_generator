@@ -14,18 +14,53 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ClientCardProps {
-  client: Client;
-  onEdit: (client: Client) => void;
-  onDelete: (id: string) => void;
+  client?: Client;
+  onEdit?: (client: Client) => void;
+  onDelete?: (id: string) => void;
+  isLoading?: boolean;
 }
 
-export function ClientCard({ client, onEdit, onDelete }: ClientCardProps) {
+export function ClientCard({
+  client,
+  onEdit,
+  onDelete,
+  isLoading,
+}: ClientCardProps) {
+  if (isLoading) {
+    return (
+      <Card className="flex flex-col h-full hover:shadow-md transition-shadow">
+        <CardHeader className="pb-3">
+          <Skeleton className="h-6 w-3/4 mb-1" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-3 w-1/3 mt-1" />
+        </CardHeader>
+        <CardContent className="pb-3 flex-grow">
+          <Skeleton className="h-4 w-2/3 mb-1" />
+          <Skeleton className="h-4 w-1/2 mb-1" />
+          <Skeleton className="h-4 w-1/3" />
+        </CardContent>
+        <CardFooter className="pt-3 border-t mt-auto gap-2">
+          <Skeleton className="h-9 flex-1" />
+          <Skeleton className="h-9 flex-1" />
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  if (!client || !onEdit || !onDelete) return null;
+
   return (
-    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col">
-      {/* Client Info */}
-      <div className="mb-3 min-w-0">
+    <Card className="flex flex-col h-full hover:shadow-md transition-shadow">
+      <CardHeader className="pb-3">
         <h3 className="font-semibold text-lg truncate">{client.name}</h3>
         <p className="text-sm text-muted-foreground truncate">{client.email}</p>
         {client.company && (
@@ -33,21 +68,21 @@ export function ClientCard({ client, onEdit, onDelete }: ClientCardProps) {
             {client.company}
           </p>
         )}
-      </div>
+      </CardHeader>
 
-      {/* Contact Details */}
       {(client.phone || client.address || client.vat_number) && (
-        <div className="text-sm text-muted-foreground space-y-1 mb-3">
-          {client.phone && <p className="truncate">📞 {client.phone}</p>}
-          {client.address && <p className="truncate">📍 {client.address}</p>}
-          {client.vat_number && (
-            <p className="truncate">🏢 TVA: {client.vat_number}</p>
-          )}
-        </div>
+        <CardContent className="pb-3 flex-grow">
+          <div className="text-sm text-muted-foreground space-y-1">
+            {client.phone && <p className="truncate">📞 {client.phone}</p>}
+            {client.address && <p className="truncate">📍 {client.address}</p>}
+            {client.vat_number && (
+              <p className="truncate">🏢 TVA: {client.vat_number}</p>
+            )}
+          </div>
+        </CardContent>
       )}
 
-      {/* Action Buttons - Always at bottom */}
-      <div className="flex gap-2 mt-auto pt-2 border-t">
+      <CardFooter className="pt-3 border-t mt-auto gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -84,7 +119,7 @@ export function ClientCard({ client, onEdit, onDelete }: ClientCardProps) {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }

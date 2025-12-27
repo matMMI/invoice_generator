@@ -4,7 +4,8 @@
 set -e
 
 echo "🧪 Running frontend unit tests..."
-npm test
+pnpm run test
+pnpm run build
 
 echo ""
 echo "✅ All tests passed!"

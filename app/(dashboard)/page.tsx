@@ -1,10 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/status-badge";
 import { Euro, Wallet } from "lucide-react";
-import { FileText, Users, Plus, ArrowRight } from "lucide-react";
+import { FileText, Users, Plus } from "lucide-react";
 import { getDashboardMetrics } from "@/lib/api/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Overview } from "@/components/dashboard/overview";

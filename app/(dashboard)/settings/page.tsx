@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { Loader2, Save, Building2 } from "lucide-react";
+import { Loader2, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -51,7 +51,6 @@ import {
 } from "@/lib/api/settings";
 
 const settingsSchema = z.object({
-  // Identity
   name: z.string().min(1, "Le nom est requis"),
   business_name: z.string().optional().or(z.literal("")),
   email: z.string().email(),
@@ -60,7 +59,6 @@ const settingsSchema = z.object({
   tax_status: z.nativeEnum(TaxStatus),
   logo_url: z.string().optional().or(z.literal("")),
 
-  // Contact
   company_email: z
     .string()
     .email("E-mail invalide")
@@ -69,7 +67,6 @@ const settingsSchema = z.object({
   company_phone: z.string().optional().or(z.literal("")),
   company_website: z.string().url("URL invalide").optional().or(z.literal("")),
 
-  // Preferences
   default_currency: z.string().min(1, "La devise est requise"),
   default_tax_rate: z.coerce.number().min(0).max(100),
   pdf_footer_text: z.string().optional().or(z.literal("")),
