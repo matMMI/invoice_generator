@@ -6,12 +6,14 @@ const handler = toNextJsHandler(auth);
 
 const allowedOrigins = ["http://localhost:3000", "http://127.0.0.1:3000"];
 
-function getAllowedOrigin(request: Request): string {
+function getAllowedOrigin(request: Request): string | null {
   const origin = request.headers.get("origin") || "";
-  return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+  return allowedOrigins.includes(origin) ? origin : null;
 }
 
-function addCorsHeaders(response: Response, origin: string): Response {
+function addCorsHeaders(response: Response, origin: string | null): Response {
+  if (!origin) return response; // Don't add CORS headers for disallowed origins
+
   const newHeaders = new Headers(response.headers);
   newHeaders.set("Access-Control-Allow-Origin", origin);
   newHeaders.set("Access-Control-Allow-Credentials", "true");
@@ -35,10 +37,14 @@ export async function POST(request: Request) {
 
 // Handle CORS preflight for local development
 export async function OPTIONS(request: Request) {
+  const origin = getAllowedOrigin(request);
+  if (!origin) {
+    return new NextResponse(null, { status: 403 });
+  }
   return new NextResponse(null, {
     status: 204,
     headers: {
-      "Access-Control-Allow-Origin": getAllowedOrigin(request),
+      "Access-Control-Allow-Origin": origin,
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
       "Access-Control-Allow-Credentials": "true",

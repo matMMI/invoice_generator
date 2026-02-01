@@ -71,8 +71,6 @@ export default function QuoteDetailPage() {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const { notifyChange } = useGlobalActivity();
-
-  // Use SWR for quote fetching with 5-second polling for real-time updates
   const {
     data: quote,
     isLoading: loading,
@@ -82,8 +80,6 @@ export default function QuoteDetailPage() {
     () => getQuote(quoteId),
     { refreshInterval: 5000 }
   );
-
-  // Fetch client when quote changes
   useEffect(() => {
     async function loadClient() {
       if (

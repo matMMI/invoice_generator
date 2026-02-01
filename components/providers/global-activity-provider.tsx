@@ -1,11 +1,57 @@
 "use client";
-import { createContext, useContext, ReactNode, useRef, useEffect } from "react";
+import { createContext, useContext, ReactNode, useEffect } from "react";
 import useSWR from "swr";
 import { toast } from "sonner";
 import { Check, X } from "lucide-react";
 import { getQuotes, Quote, QuoteStatus } from "@/lib/api/quotes";
 import { useRouter } from "next/navigation";
 import { onSyncMessage, broadcastSync } from "@/lib/sync";
+const NOTIFIED_KEY = "devis_notified_changes";
+const FINAL_STATUSES = [
+  QuoteStatus.SIGNED,
+  QuoteStatus.ACCEPTED,
+  QuoteStatus.REJECTED,
+] as const;
+
+function getNotifiedSet(): Set<string> {
+  try {
+    const stored = localStorage.getItem(NOTIFIED_KEY);
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function persistNotifiedSet(set: Set<string>) {
+  try {
+    const arr = Array.from(set);
+    const trimmed = arr.length > 500 ? arr.slice(-500) : arr;
+    localStorage.setItem(NOTIFIED_KEY, JSON.stringify(trimmed));
+  } catch {
+    // localStorage full or unavailable
+  }
+}
+
+function markNotified(quoteId: string | number, status: string) {
+  const set = getNotifiedSet();
+  set.add(`${quoteId}_${status}`);
+  persistNotifiedSet(set);
+}
+
+function isAlreadyNotified(quoteId: string | number, status: string): boolean {
+  return getNotifiedSet().has(`${quoteId}_${status}`);
+}
+
+function seedCurrentStatuses(quotes: Quote[]) {
+  const set = getNotifiedSet();
+  for (const q of quotes) {
+    if ((FINAL_STATUSES as readonly string[]).includes(q.status)) {
+      set.add(`${q.id}_${q.status}`);
+    }
+  }
+  persistNotifiedSet(set);
+}
+// --- end notification tracking ---
 
 interface GlobalActivityContextType {
   quotes: Quote[];
@@ -50,7 +96,6 @@ export function GlobalActivityProvider({
   children,
 }: GlobalActivityProviderProps) {
   const router = useRouter();
-  const previousQuotesRef = useRef<Quote[]>([]);
 
   // SWR handles caching, revalidation, and deduplication automatically
   const {
@@ -58,7 +103,7 @@ export function GlobalActivityProvider({
     isLoading,
     mutate,
   } = useSWR("global-quotes", fetchQuotes, {
-    refreshInterval: 30000,
+    refreshInterval: 15000,
     revalidateOnFocus: true,
     dedupingInterval: 5000,
     compare: (a, b) => JSON.stringify(a) === JSON.stringify(b),
@@ -78,48 +123,49 @@ export function GlobalActivityProvider({
     return unsubscribe;
   }, [mutate]);
 
-  // Check for status changes and show notifications
+  // Detect status changes and show notifications (persisted via localStorage)
   useEffect(() => {
-    if (quotes.length === 0 || previousQuotesRef.current.length === 0) {
-      previousQuotesRef.current = quotes;
+    if (quotes.length === 0) return;
+
+    // First ever load (or after localStorage clear): seed without notifying
+    if (localStorage.getItem(NOTIFIED_KEY) === null) {
+      seedCurrentStatuses(quotes);
       return;
     }
 
-    quotes.forEach((newQ) => {
-      const oldQ = previousQuotesRef.current.find((q) => q.id === newQ.id);
-      if (oldQ && oldQ.status !== newQ.status) {
-        if (
-          oldQ.status === QuoteStatus.SENT &&
-          newQ.status === QuoteStatus.SIGNED
-        ) {
-          toast.success(`Le devis ${newQ.quote_number} a été signé !`, {
-            description: `Par ${newQ.signer_name || "le client"}`,
-            duration: 8000,
-            icon: <Check className="h-5 w-5 text-green-500" />,
-            action: {
-              label: "Voir",
-              onClick: () => router.push(`/quotes/${newQ.id}`),
-            },
-          });
-        } else if (
-          oldQ.status === QuoteStatus.SENT &&
-          newQ.status === QuoteStatus.ACCEPTED
-        ) {
-          toast.success(`Le devis ${newQ.quote_number} a été accepté !`, {
-            icon: <Check className="h-5 w-5 text-green-500" />,
-          });
-        } else if (
-          oldQ.status === QuoteStatus.SENT &&
-          newQ.status === QuoteStatus.REJECTED
-        ) {
-          toast.error(`Le devis ${newQ.quote_number} a été refusé.`, {
-            icon: <X className="h-5 w-5 text-red-500" />,
-          });
-        }
+    for (const q of quotes) {
+      if (
+        q.status === QuoteStatus.SIGNED &&
+        !isAlreadyNotified(q.id, QuoteStatus.SIGNED)
+      ) {
+        markNotified(q.id, QuoteStatus.SIGNED);
+        toast.success(`Le devis ${q.quote_number} a été signé !`, {
+          description: `Par ${q.signer_name || "le client"}`,
+          duration: 8000,
+          icon: <Check className="h-5 w-5 text-green-500" />,
+          action: {
+            label: "Voir",
+            onClick: () => router.push(`/quotes/${q.id}`),
+          },
+        });
+      } else if (
+        q.status === QuoteStatus.ACCEPTED &&
+        !isAlreadyNotified(q.id, QuoteStatus.ACCEPTED)
+      ) {
+        markNotified(q.id, QuoteStatus.ACCEPTED);
+        toast.success(`Le devis ${q.quote_number} a été accepté !`, {
+          icon: <Check className="h-5 w-5 text-green-500" />,
+        });
+      } else if (
+        q.status === QuoteStatus.REJECTED &&
+        !isAlreadyNotified(q.id, QuoteStatus.REJECTED)
+      ) {
+        markNotified(q.id, QuoteStatus.REJECTED);
+        toast.error(`Le devis ${q.quote_number} a été refusé.`, {
+          icon: <X className="h-5 w-5 text-red-500" />,
+        });
       }
-    });
-
-    previousQuotesRef.current = quotes;
+    }
   }, [quotes, router]);
 
   // Notify other tabs + refresh this tab

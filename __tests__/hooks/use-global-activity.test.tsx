@@ -9,6 +9,13 @@ import { getQuotes } from "@/lib/api/quotes";
 // Mock the API client
 jest.mock("@/lib/api/quotes", () => ({
   getQuotes: jest.fn(),
+  QuoteStatus: {
+    DRAFT: "Draft",
+    SENT: "Sent",
+    SIGNED: "Signed",
+    ACCEPTED: "Accepted",
+    REJECTED: "Rejected",
+  },
 }));
 
 jest.mock("next/navigation", () => ({
