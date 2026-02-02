@@ -60,6 +60,8 @@ export default function SignQuotePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [signerName, setSignerName] = useState("");
+  const [signerEmail, setSignerEmail] = useState("");
+  const [signerFunction, setSignerFunction] = useState("");
   const [signatureData, setSignatureData] = useState<string | null>(null);
   const [signing, setSigning] = useState(false);
   const [signed, setSigned] = useState(false);
@@ -76,6 +78,9 @@ export default function SignQuotePage() {
         setQuote(data);
         if (data.is_signed) {
           setSigned(true);
+        } else {
+          if (data.client_name) setSignerName(data.client_name);
+          if (data.client_email) setSignerEmail(data.client_email);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erreur inconnue");
@@ -94,6 +99,10 @@ export default function SignQuotePage() {
       toast.error("Veuillez entrer votre nom");
       return;
     }
+    if (!signerEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signerEmail)) {
+      toast.error("Veuillez entrer une adresse email valide");
+      return;
+    }
     if (!signatureData) {
       toast.error("Veuillez signer dans le cadre");
       return;
@@ -108,6 +117,8 @@ export default function SignQuotePage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             signer_name: signerName,
+            signer_email: signerEmail,
+            signer_function: signerFunction || null,
             signature_data: signatureData,
           }),
         }
@@ -337,6 +348,29 @@ export default function SignQuotePage() {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="signer-email">Votre adresse email</Label>
+                <Input
+                  id="signer-email"
+                  type="email"
+                  placeholder="jean.dupont@exemple.fr"
+                  value={signerEmail}
+                  onChange={(e) => setSignerEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="signer-function">
+                  Fonction (optionnel)
+                </Label>
+                <Input
+                  id="signer-function"
+                  placeholder="Directeur technique, Gérant..."
+                  value={signerFunction}
+                  onChange={(e) => setSignerFunction(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label>Votre signature</Label>
                 <div className="w-full">
                   <SignatureCanvas
@@ -349,7 +383,7 @@ export default function SignQuotePage() {
 
               <Button
                 onClick={handleSign}
-                disabled={signing || !signerName || !signatureData}
+                disabled={signing || !signerName || !signerEmail || !signatureData}
                 className="w-full"
                 size="lg"
               >
@@ -364,8 +398,7 @@ export default function SignQuotePage() {
               </Button>
 
               <p className="text-xs text-muted-foreground text-center">
-                Votre signature sera horodatée et votre adresse IP enregistrée
-                pour valeur probante.
+                Votre signature sera horodatée pour valeur probante.
               </p>
             </CardContent>
           </Card>

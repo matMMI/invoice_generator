@@ -372,6 +372,17 @@ button:disabled,
   cursor: not-allowed !important;
 }
 
+/* Hide native number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 @layer components {
   .page-container {
     @apply flex-1 space-y-4 p-2 md:p-8 pt-4 md:pt-6 max-w-7xl mx-auto;

@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, ChevronUp, ChevronDown } from "lucide-react";
 import { QuoteItem } from "@/lib/api/quotes";
 
 interface LineItemsEditorProps {
@@ -90,28 +90,94 @@ export function LineItemsEditor({
                   />
                 </TableCell>
                 <TableCell className="text-right">
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="text-right"
-                    value={item.quantity}
-                    onChange={(e) =>
-                      handleChange(index, "quantity", e.target.value)
-                    }
-                  />
+                  <div className="relative flex items-center">
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className="text-right pr-7"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        handleChange(index, "quantity", e.target.value)
+                      }
+                    />
+                    <div className="absolute right-0 inset-y-0 flex flex-col border-l border-border w-6">
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        className="flex-1 flex items-center justify-center hover:bg-accent rounded-tr-md transition-colors"
+                        onClick={() =>
+                          handleChange(
+                            index,
+                            "quantity",
+                            Math.round((item.quantity + 0.01) * 100) / 100
+                          )
+                        }
+                      >
+                        <ChevronUp className="h-3 w-3 text-muted-foreground" />
+                      </button>
+                      <div className="border-t border-border" />
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        className="flex-1 flex items-center justify-center hover:bg-accent rounded-br-md transition-colors"
+                        onClick={() =>
+                          handleChange(
+                            index,
+                            "quantity",
+                            Math.max(0, Math.round((item.quantity - 0.01) * 100) / 100)
+                          )
+                        }
+                      >
+                        <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                      </button>
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="text-right"
-                    value={item.unit_price}
-                    onChange={(e) =>
-                      handleChange(index, "unit_price", e.target.value)
-                    }
-                  />
+                  <div className="relative flex items-center">
+                    <Input
+                      type="number"
+                      min="0"
+                      step="1"
+                      className="text-right pr-7"
+                      value={item.unit_price}
+                      onChange={(e) =>
+                        handleChange(index, "unit_price", Math.round(Number(e.target.value)))
+                      }
+                    />
+                    <div className="absolute right-0 inset-y-0 flex flex-col border-l border-border w-6">
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        className="flex-1 flex items-center justify-center hover:bg-accent rounded-tr-md transition-colors"
+                        onClick={() =>
+                          handleChange(
+                            index,
+                            "unit_price",
+                            item.unit_price + 1
+                          )
+                        }
+                      >
+                        <ChevronUp className="h-3 w-3 text-muted-foreground" />
+                      </button>
+                      <div className="border-t border-border" />
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        className="flex-1 flex items-center justify-center hover:bg-accent rounded-br-md transition-colors"
+                        onClick={() =>
+                          handleChange(
+                            index,
+                            "unit_price",
+                            Math.max(0, item.unit_price - 1)
+                          )
+                        }
+                      >
+                        <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                      </button>
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell className="text-right font-medium">
                   {(

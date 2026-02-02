@@ -46,8 +46,8 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
   }
 
   const MICRO_CEILING = 77700;
-  const VAT_THRESHOLD = 36800;
-  const URSSAF_RATE = 0.212;
+  const VAT_THRESHOLD = 37500;
+  const URSSAF_RATE = 0.22;
   const progress = (data.year_to_date / MICRO_CEILING) * 100;
   const urssafEstimate = data.quarter_to_date * URSSAF_RATE;
 
@@ -87,14 +87,14 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Estimation sur le CA encaissé du trimestre (~21.2%)
+              Estimation sur le CA encaissé du trimestre (~22%)
             </p>
           </div>
 
           {data.year_to_date > VAT_THRESHOLD && (
             <div className="flex items-center gap-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-md text-xs">
               <AlertCircle className="h-4 w-4" />
-              <span>Attention : Seuil de franchise TVA dépassé (36 800€)</span>
+              <span>Attention : Seuil de franchise TVA dépassé (37 500€)</span>
             </div>
           )}
         </div>

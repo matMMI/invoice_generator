@@ -43,7 +43,8 @@ export interface Quote {
   share_token?: string;
   signed_at?: string;
   signer_name?: string;
-  signer_ip?: string;
+  signer_email?: string;
+  signer_function?: string;
 }
 
 export interface CreateQuoteData {

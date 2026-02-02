@@ -54,7 +54,14 @@ const settingsSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   business_name: z.string().optional().or(z.literal("")),
   email: z.string().email(),
-  siret: z.string().optional().or(z.literal("")),
+  siret: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => !val || /^\d{14}$/.test(val.replace(/\s/g, "")),
+      { message: "Le SIRET doit contenir exactement 14 chiffres" }
+    ),
   address: z.string().optional().or(z.literal("")),
   tax_status: z.nativeEnum(TaxStatus),
   logo_url: z.string().optional().or(z.literal("")),

@@ -30,7 +30,7 @@ export default function DashboardPage() {
     });
     return unsubscribe;
   }, [mutate]);
-  const netEstimate = (metrics?.fiscal_revenue.year_to_date || 0) * (1 - 0.212);
+  const netEstimate = (metrics?.fiscal_revenue.year_to_date || 0) * (1 - 0.22);
   const formatCurrency = (amount: number, currency: string) => {
     return amount.toLocaleString("fr-FR", {
       style: "currency",
@@ -140,7 +140,7 @@ export default function DashboardPage() {
               <div className="stats-value">
                 {formatCurrency(netEstimate, "EUR")}
               </div>
-              <p className="stats-subtitle">Après cotisations (~21.2%)</p>
+              <p className="stats-subtitle">Après cotisations (~22%)</p>
             </>
           )}
         </div>
