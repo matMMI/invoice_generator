@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -110,12 +109,13 @@ export function ClientCard({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Annuler</AlertDialogCancel>
-              <AlertDialogAction
+              <Button
+                type="button"
+                variant="destructive"
                 onClick={() => onDelete(client.id)}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 Supprimer
-              </AlertDialogAction>
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

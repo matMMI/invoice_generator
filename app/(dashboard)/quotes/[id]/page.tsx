@@ -16,7 +16,6 @@ import {
 import { StatusBadge } from "@/components/status-badge";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -141,7 +140,6 @@ export default function QuoteDetailPage() {
 
   const handleShare = async () => {
     if (!quote) return;
-    setSharing(true);
     setSharing(true);
     try {
       const session = await authClient.getSession();
@@ -284,12 +282,17 @@ export default function QuoteDetailPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                <Button
+                  type="button"
+                  variant="destructive"
                   onClick={handleDelete}
+                  disabled={deleting}
                 >
+                  {deleting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
                   Supprimer
-                </AlertDialogAction>
+                </Button>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
