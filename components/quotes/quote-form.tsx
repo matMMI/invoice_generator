@@ -36,14 +36,14 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
       ? {
           client_id: initialData.client_id,
           currency: initialData.currency,
-          tax_rate: initialData.tax_rate,
+          tax_rate: Number(initialData.tax_rate),
           notes: initialData.notes || "",
           items: initialData.items.map((item) => ({
             id: item.id,
             description: item.description,
-            quantity: item.quantity,
-            unit_price: item.unit_price,
-            order: item.order || 0,
+            quantity: Number(item.quantity),
+            unit_price: Number(item.unit_price),
+            order: Number(item.order) || 0,
           })),
         }
       : {
@@ -82,7 +82,9 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit, () => {
+      toast.error("Veuillez corriger les erreurs du formulaire");
+    })}>
       <div className="grid gap-6 p-6 border rounded-lg bg-card">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
