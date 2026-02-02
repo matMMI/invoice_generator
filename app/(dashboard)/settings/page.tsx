@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -87,6 +86,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
@@ -105,7 +105,7 @@ export default function SettingsPage() {
       default_tax_rate: 20,
       pdf_footer_text: "",
       vat_exemption_text: "TVA non applicable, art. 293 B du CGI",
-      late_payment_penalties: "3 fois le taux d'intérêt légal",
+      late_payment_penalties: "",
     },
   });
 
@@ -317,7 +317,8 @@ export default function SettingsPage() {
                     <FormLabel>Régime TVA</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
+                      defaultValue={TaxStatus.FRANCHISE}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -455,7 +456,7 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AlertDialog>
+            <AlertDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive">
                   Réinitialiser toutes les données
@@ -482,17 +483,18 @@ export default function SettingsPage() {
                   <AlertDialogCancel disabled={resetting}>
                     Annuler
                   </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive hover:bg-destructive/90"
+                  <Button
+                    variant="destructive"
                     disabled={resetting}
-                    onClick={async (e) => {
-                      e.preventDefault();
+                    onClick={async () => {
                       try {
                         setResetting(true);
                         await resetAccount();
                         toast.success("Compte réinitialisé avec succès", {
                           description: "Toutes vos données ont été effacées.",
                         });
+                        setResetDialogOpen(false);
+                        window.location.reload();
                       } catch (error) {
                         toast.error("Erreur lors de la réinitialisation");
                       } finally {
@@ -504,7 +506,7 @@ export default function SettingsPage() {
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
                     {resetting ? "Suppression..." : "Confirmer la suppression"}
-                  </AlertDialogAction>
+                  </Button>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
