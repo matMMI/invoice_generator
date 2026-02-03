@@ -11,6 +11,7 @@ venv/
 ENV/
 vercel.env
 vercel.prodFront.env
+.env.vercel.prodFront
 env/
 build/
 develop-eggs/

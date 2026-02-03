@@ -22,6 +22,11 @@ export function UserNav() {
   const { data: session, isPending } = authClient.useSession();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
+  // Debug: log session state in development
+  if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+    console.debug("[UserNav] Session:", { session, isPending });
+  }
+
   const handleSignOut = async () => {
     setIsSigningOut(true);
     await authClient.signOut({
