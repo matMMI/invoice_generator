@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ import { LineItemsEditor } from "./line-items-editor";
 import { QuoteTotals } from "./quote-totals";
 import { Currency, Quote, createQuote, updateQuote } from "@/lib/api/quotes";
 import { quoteFormSchema, type QuoteFormValues } from "@/lib/schemas/quote";
+import { getSettings, TaxStatus } from "@/lib/api/settings";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useGlobalActivity } from "@/components/providers/global-activity-provider";
@@ -24,6 +26,8 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
   const router = useRouter();
   const { notifyChange } = useGlobalActivity();
   const isEdit = mode === "edit";
+  const [isFranchise, setIsFranchise] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -54,6 +58,20 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
           items: [{ description: "", quantity: 1, unit_price: 0, order: 0 }],
         },
   });
+
+  useEffect(() => {
+    getSettings()
+      .then((s) => {
+        if (s.tax_status === TaxStatus.FRANCHISE) {
+          setIsFranchise(true);
+          setValue("tax_rate", 0);
+        } else {
+          // ASSUJETTI: use default tax rate from settings
+          setValue("tax_rate", s.default_tax_rate);
+        }
+      })
+      .catch(() => {});
+  }, [setValue]);
 
   const items = watch("items");
   const taxRate = watch("tax_rate");
@@ -116,6 +134,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
           currency={currency}
           taxRate={taxRate}
           onTaxRateChange={(rate) => setValue("tax_rate", rate)}
+          hideTaxRate={isFranchise}
         />
 
         <div className="space-y-2">
@@ -123,6 +142,12 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
           <Textarea
             {...register("notes")}
             placeholder="Notes supplémentaires pour le client..."
+            className="min-h-20 resize-none overflow-hidden"
+            onInput={(e) => {
+              const target = e.target as HTMLTextAreaElement;
+              target.style.height = "auto";
+              target.style.height = target.scrollHeight + "px";
+            }}
           />
         </div>
       </div>

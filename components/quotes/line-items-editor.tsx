@@ -94,11 +94,11 @@ export function LineItemsEditor({
                     <Input
                       type="number"
                       min="0"
-                      step="0.01"
+                      step="1"
                       className="text-right pr-7"
                       value={item.quantity}
                       onChange={(e) =>
-                        handleChange(index, "quantity", e.target.value)
+                        handleChange(index, "quantity", Math.round(Number(e.target.value)))
                       }
                     />
                     <div className="absolute right-0 inset-y-0 flex flex-col border-l border-border w-6">
@@ -110,7 +110,7 @@ export function LineItemsEditor({
                           handleChange(
                             index,
                             "quantity",
-                            Math.round((item.quantity + 0.01) * 100) / 100
+                            item.quantity + 1
                           )
                         }
                       >
@@ -125,7 +125,7 @@ export function LineItemsEditor({
                           handleChange(
                             index,
                             "quantity",
-                            Math.max(0, Math.round((item.quantity - 0.01) * 100) / 100)
+                            Math.max(0, item.quantity - 1)
                           )
                         }
                       >

@@ -19,7 +19,6 @@ export function ClientForm({
     company: initialData?.company || "",
     address: initialData?.address || "",
     phone: initialData?.phone || "",
-    vat_number: initialData?.vat_number || "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,26 +120,6 @@ export function ClientForm({
           }
           className="w-full px-3 py-2 border rounded-md bg-background"
         />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label
-            htmlFor="vat_number"
-            className="block text-sm font-medium mb-1"
-          >
-            N° TVA
-          </label>
-          <input
-            id="vat_number"
-            type="text"
-            value={formData.vat_number}
-            onChange={(e) =>
-              setFormData({ ...formData, vat_number: e.target.value })
-            }
-            className="w-full px-3 py-2 border rounded-md bg-background"
-          />
-        </div>
       </div>
 
       <div className="flex gap-3 justify-end pt-4 border-t">

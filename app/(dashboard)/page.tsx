@@ -41,14 +41,11 @@ export default function DashboardPage() {
   return (
     <div className="w-full">
       <div className="border-b border-border">
-        <div className="flex items-center justify-between px-6 py-6">
+        <div className="flex items-center justify-between px-6 py-3">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Tableau de bord
             </h1>
-            <p className="text-muted-foreground">
-              Aperçu de vos devis et clients.
-            </p>
           </div>
           <Link href="/quotes/create">
             <Button>

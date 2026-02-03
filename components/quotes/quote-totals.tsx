@@ -10,6 +10,7 @@ interface QuoteTotalsProps {
   currency: string;
   taxRate: number;
   onTaxRateChange: (rate: number) => void;
+  hideTaxRate?: boolean;
 }
 
 export function QuoteTotals({
@@ -17,6 +18,7 @@ export function QuoteTotals({
   currency,
   taxRate,
   onTaxRateChange,
+  hideTaxRate = false,
 }: QuoteTotalsProps) {
   const subtotal = items.reduce(
     (sum, item) => sum + (item.quantity || 0) * (item.unit_price || 0),
@@ -40,29 +42,33 @@ export function QuoteTotals({
           <span className="font-medium">{formatMoney(subtotal)}</span>
         </div>
 
-        <div className="flex justify-between items-center gap-4">
-          <Label
-            htmlFor="tax-rate"
-            className="text-sm text-muted-foreground whitespace-nowrap"
-          >
-            Taux TVA (%)
-          </Label>
-          <Input
-            id="tax-rate"
-            type="number"
-            min="0"
-            max="100"
-            step="0.1"
-            className="w-24 text-right h-8"
-            value={taxRate}
-            onChange={(e) => onTaxRateChange(Number(e.target.value))}
-          />
-        </div>
+        {!hideTaxRate && (
+          <>
+            <div className="flex justify-between items-center gap-4">
+              <Label
+                htmlFor="tax-rate"
+                className="text-sm text-muted-foreground whitespace-nowrap"
+              >
+                Taux TVA (%)
+              </Label>
+              <Input
+                id="tax-rate"
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                className="w-24 text-right h-8"
+                value={taxRate}
+                onChange={(e) => onTaxRateChange(Number(e.target.value))}
+              />
+            </div>
 
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-muted-foreground">Montant TVA</span>
-          <span>{formatMoney(taxAmount)}</span>
-        </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted-foreground">Montant TVA</span>
+              <span>{formatMoney(taxAmount)}</span>
+            </div>
+          </>
+        )}
 
         <div className="border-t pt-4 flex justify-between items-center text-lg font-bold">
           <span>Total</span>
