@@ -73,6 +73,9 @@ export async function getQuotes(
 ): Promise<{ quotes: Quote[]; total: number }> {
   const session = await authClient.getSession();
   const token = session.data?.session.token;
+  if (!token) {
+    throw new Error("Not authenticated");
+  }
 
   const url = new URL("/api/quotes", process.env.NEXT_PUBLIC_API_URL || "");
   url.searchParams.set("page", page.toString());
@@ -100,6 +103,7 @@ export async function getQuotes(
 export async function createQuote(data: CreateQuoteData): Promise<Quote> {
   const session = await authClient.getSession();
   const token = session.data?.session.token;
+  if (!token) throw new Error("Not authenticated");
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quotes`, {
     method: "POST",
@@ -120,6 +124,7 @@ export async function createQuote(data: CreateQuoteData): Promise<Quote> {
 export async function getQuote(id: string): Promise<Quote> {
   const session = await authClient.getSession();
   const token = session.data?.session.token;
+  if (!token) throw new Error("Not authenticated");
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/quotes/${id}?t=${Date.now()}`,
@@ -141,6 +146,7 @@ export async function updateQuote(
 ): Promise<Quote> {
   const session = await authClient.getSession();
   const token = session.data?.session.token;
+  if (!token) throw new Error("Not authenticated");
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/quotes/${id}`,
@@ -161,6 +167,7 @@ export async function updateQuote(
 export async function deleteQuote(id: string): Promise<void> {
   const session = await authClient.getSession();
   const token = session.data?.session.token;
+  if (!token) throw new Error("Not authenticated");
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/quotes/${id}`,

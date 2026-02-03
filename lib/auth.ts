@@ -12,8 +12,10 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     password: {
+      minLength: 8,
+      maxLength: 128,
       hash: async (password: string) => {
-        return bcrypt.hashSync(password, 12);
+        return bcrypt.hash(password, 12);
       },
       verify: async ({
         hash,
@@ -22,9 +24,13 @@ export const auth = betterAuth({
         hash: string;
         password: string;
       }) => {
-        return bcrypt.compareSync(password, hash);
+        return bcrypt.compare(password, hash);
       },
     },
+  },
+  rateLimit: {
+    window: 60,
+    max: 10,
   },
   user: {
     fields: {

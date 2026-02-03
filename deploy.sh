@@ -46,7 +46,7 @@ fi
 
 # Git operations
 echo -e "${BLUE}📦 Adding changes to git...${NC}"
-git add .
+git add -u  # Only stage tracked files, never new untracked files
 
 echo -e "${BLUE}💾 Committing changes...${NC}"
 git commit -m "$COMMIT_MSG"
