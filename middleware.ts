@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const sessionCookie =
@@ -16,8 +16,6 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/settings") ||
     path.startsWith("/profile");
 
-  // Check cookie presence only — actual session validation happens in API routes.
-  // Calling /auth/get-session here caused rate-limit (429) storms in production.
   const hasSession = !!sessionCookie?.value;
 
   if (hasSession) {

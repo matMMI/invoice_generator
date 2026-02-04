@@ -1,9 +1,9 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { QuoteItem } from "@/lib/api/quotes";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface QuoteTotalsProps {
   items: QuoteItem[];

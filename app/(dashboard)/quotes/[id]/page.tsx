@@ -1,18 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useGlobalActivity } from "@/components/providers/global-activity-provider";
 import { StatusBadge } from "@/components/status-badge";
 import {
   AlertDialog,
@@ -24,6 +11,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -31,28 +20,39 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
-  ArrowLeft,
-  Edit,
-  Trash2,
-  FileDown,
-  Loader2,
-  User,
-  Send,
-  Copy,
-  Check,
-} from "lucide-react";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Client, getClient } from "@/lib/api/clients";
+import { generateQuotePdf } from "@/lib/api/pdf";
 import {
   Quote,
   QuoteStatus,
+  deleteQuote,
   getQuote,
   updateQuote,
-  deleteQuote,
 } from "@/lib/api/quotes";
-import { getClient, Client } from "@/lib/api/clients";
-import { generateQuotePdf } from "@/lib/api/pdf";
+import { authClient } from "@/lib/auth-client";
+import {
+  ArrowLeft,
+  Check,
+  Copy,
+  Edit,
+  FileDown,
+  Loader2,
+  Send,
+  Trash2,
+  User,
+} from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useGlobalActivity } from "@/components/providers/global-activity-provider";
 import useSWR from "swr";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";

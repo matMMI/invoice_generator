@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Eraser } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SignatureCanvasProps {
   onSignatureChange: (dataUrl: string | null) => void;

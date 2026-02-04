@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -14,10 +11,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { Loader2, AlertCircle } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 const profileSchema = z.object({
   username: z
@@ -91,13 +91,16 @@ export function UserProfileForm({ user }: { user: any }) {
 
       // Better Auth returns response with error field if there's an error
       if (response.error) {
-        const errorMessage = response.error.message || "Erreur lors du changement de mot de passe";
+        const errorMessage =
+          response.error.message || "Erreur lors du changement de mot de passe";
         const lowerMessage = errorMessage.toLowerCase();
 
         // Display password-related errors in red alert box
-        if (lowerMessage.includes("invalid") ||
-            lowerMessage.includes("password too") ||
-            lowerMessage.includes("credential")) {
+        if (
+          lowerMessage.includes("invalid") ||
+          lowerMessage.includes("password too") ||
+          lowerMessage.includes("credential")
+        ) {
           setPasswordError(errorMessage);
         } else {
           toast.error(errorMessage);
@@ -109,13 +112,16 @@ export function UserProfileForm({ user }: { user: any }) {
         setPasswordError(null);
       }
     } catch (error: any) {
-      const errorMessage = error.message || "Erreur lors du changement de mot de passe";
+      const errorMessage =
+        error.message || "Erreur lors du changement de mot de passe";
       const lowerMessage = errorMessage.toLowerCase();
 
       // Fallback for caught exceptions
-      if (lowerMessage.includes("invalid") ||
-          lowerMessage.includes("password too") ||
-          lowerMessage.includes("credential")) {
+      if (
+        lowerMessage.includes("invalid") ||
+        lowerMessage.includes("password too") ||
+        lowerMessage.includes("credential")
+      ) {
         setPasswordError(errorMessage);
       } else {
         toast.error(errorMessage);

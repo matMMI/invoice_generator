@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trash2, Plus, ChevronUp, ChevronDown } from "lucide-react";
 import { QuoteItem } from "@/lib/api/quotes";
+import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 
 interface LineItemsEditorProps {
   items: QuoteItem[];
@@ -98,7 +97,11 @@ export function LineItemsEditor({
                       className="text-right pr-7"
                       value={item.quantity}
                       onChange={(e) =>
-                        handleChange(index, "quantity", Math.round(Number(e.target.value)))
+                        handleChange(
+                          index,
+                          "quantity",
+                          Math.round(Number(e.target.value))
+                        )
                       }
                     />
                     <div className="absolute right-0 inset-y-0 flex flex-col border-l border-border w-6">
@@ -107,11 +110,7 @@ export function LineItemsEditor({
                         tabIndex={-1}
                         className="flex-1 flex items-center justify-center hover:bg-accent rounded-tr-md transition-colors"
                         onClick={() =>
-                          handleChange(
-                            index,
-                            "quantity",
-                            item.quantity + 1
-                          )
+                          handleChange(index, "quantity", item.quantity + 1)
                         }
                       >
                         <ChevronUp className="h-3 w-3 text-muted-foreground" />
@@ -143,7 +142,11 @@ export function LineItemsEditor({
                       className="text-right pr-7"
                       value={item.unit_price}
                       onChange={(e) =>
-                        handleChange(index, "unit_price", Math.round(Number(e.target.value)))
+                        handleChange(
+                          index,
+                          "unit_price",
+                          Math.round(Number(e.target.value))
+                        )
                       }
                     />
                     <div className="absolute right-0 inset-y-0 flex flex-col border-l border-border w-6">
@@ -152,11 +155,7 @@ export function LineItemsEditor({
                         tabIndex={-1}
                         className="flex-1 flex items-center justify-center hover:bg-accent rounded-tr-md transition-colors"
                         onClick={() =>
-                          handleChange(
-                            index,
-                            "unit_price",
-                            item.unit_price + 1
-                          )
+                          handleChange(index, "unit_price", item.unit_price + 1)
                         }
                       >
                         <ChevronUp className="h-3 w-3 text-muted-foreground" />

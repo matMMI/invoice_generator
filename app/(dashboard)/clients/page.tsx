@@ -1,21 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Client,
-  getClients,
-  createClient,
-  updateClient,
-  deleteClient,
-} from "@/lib/api/clients";
 import { ClientCard } from "@/components/clients/client-card";
 import { ClientForm } from "@/components/clients/client-form";
-import { Button } from "@/components/ui/button";
-import { Plus, Users } from "lucide-react";
-import { toast } from "sonner";
 import { SearchHeader } from "@/components/dashboard/search-header";
 import { useGlobalActivity } from "@/components/providers/global-activity-provider";
+import { Button } from "@/components/ui/button";
+import {
+  Client,
+  createClient,
+  deleteClient,
+  getClients,
+  updateClient,
+} from "@/lib/api/clients";
+import { Plus, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);

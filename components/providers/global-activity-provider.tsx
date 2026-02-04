@@ -1,11 +1,11 @@
 "use client";
-import { createContext, useContext, ReactNode, useEffect } from "react";
-import useSWR from "swr";
-import { toast } from "sonner";
-import { Check, X } from "lucide-react";
 import { getQuotes, Quote, QuoteStatus } from "@/lib/api/quotes";
+import { broadcastSync, onSyncMessage } from "@/lib/sync";
+import { Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { onSyncMessage, broadcastSync } from "@/lib/sync";
+import { createContext, ReactNode, useContext, useEffect } from "react";
+import { toast } from "sonner";
+import useSWR from "swr";
 const NOTIFIED_KEY = "devis_notified_changes";
 const FINAL_STATUSES = [
   QuoteStatus.SIGNED,

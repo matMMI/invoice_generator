@@ -10,8 +10,8 @@ interface FiscalStatusProps {
 }
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { MICRO_CEILING, URSSAF_RATE, VAT_THRESHOLD } from "@/lib/fiscal";
 import { formatCurrency } from "@/lib/formatters";
-import { MICRO_CEILING, VAT_THRESHOLD, URSSAF_RATE } from "@/lib/fiscal";
 
 export function FiscalStatus({ data, loading }: FiscalStatusProps) {
   if (loading || !data) {
@@ -79,8 +79,8 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
                     pastMicro
                       ? "bg-red-500"
                       : pastVat
-                        ? "bg-yellow-500"
-                        : "bg-emerald-500"
+                      ? "bg-yellow-500"
+                      : "bg-emerald-500"
                   }`}
                   style={{ width: `${progress}%` }}
                 />
@@ -126,14 +126,21 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
           {pastVat && !pastMicro && (
             <div className="flex items-center gap-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-md text-xs">
               <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>Seuil de franchise TVA dépassé ({formatCurrency(VAT_THRESHOLD)}) — tu dois facturer la TVA</span>
+              <span>
+                Seuil de franchise TVA dépassé ({formatCurrency(VAT_THRESHOLD)})
+                — tu dois facturer la TVA
+              </span>
             </div>
           )}
 
           {pastMicro && (
             <div className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded-md text-xs">
               <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>Plafond micro-entreprise dépassé ({formatCurrency(MICRO_CEILING)}) — changement de régime obligatoire</span>
+              <span>
+                Plafond micro-entreprise dépassé (
+                {formatCurrency(MICRO_CEILING)}) — changement de régime
+                obligatoire
+              </span>
             </div>
           )}
         </div>

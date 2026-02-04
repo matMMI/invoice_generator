@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { ClientSelector } from "@/components/clients/client-selector";
+import { useGlobalActivity } from "@/components/providers/global-activity-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ClientSelector } from "@/components/clients/client-selector";
+import { createQuote, Currency, Quote, updateQuote } from "@/lib/api/quotes";
+import { getSettings, TaxStatus } from "@/lib/api/settings";
+import { quoteFormSchema, type QuoteFormValues } from "@/lib/schemas/quote";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { LineItemsEditor } from "./line-items-editor";
 import { QuoteTotals } from "./quote-totals";
-import { Currency, Quote, createQuote, updateQuote } from "@/lib/api/quotes";
-import { quoteFormSchema, type QuoteFormValues } from "@/lib/schemas/quote";
-import { getSettings, TaxStatus } from "@/lib/api/settings";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
-import { useGlobalActivity } from "@/components/providers/global-activity-provider";
 
 interface QuoteFormProps {
   mode?: "create" | "edit";
@@ -100,9 +100,11 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit, () => {
-      toast.error("Veuillez corriger les erreurs du formulaire");
-    })}>
+    <form
+      onSubmit={handleSubmit(onSubmit, () => {
+        toast.error("Veuillez corriger les erreurs du formulaire");
+      })}
+    >
       <div className="grid gap-6 p-6 border rounded-lg bg-card">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">

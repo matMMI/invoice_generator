@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Plus, FileText } from "lucide-react";
-import { getQuotes, Quote } from "@/lib/api/quotes";
-import { QuoteCard } from "@/components/quotes/quote-card";
 import { SearchHeader } from "@/components/dashboard/search-header";
+import { QuoteCard } from "@/components/quotes/quote-card";
+import { Button } from "@/components/ui/button";
+import { getQuotes, Quote } from "@/lib/api/quotes";
+import { FileText, Plus } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([]);

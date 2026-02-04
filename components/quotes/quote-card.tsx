@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/status-badge";
-import Link from "next/link";
-import { Quote } from "@/lib/api/quotes";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Quote } from "@/lib/api/quotes";
+import Link from "next/link";
 
 interface QuoteCardProps {
   quote?: Quote;

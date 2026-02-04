@@ -1,8 +1,5 @@
 "use client";
 
-import { Client } from "@/lib/api/clients";
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -13,6 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -20,6 +18,8 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Client } from "@/lib/api/clients";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface ClientCardProps {
   client?: Client;

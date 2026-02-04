@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -8,7 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getClients, Client } from "@/lib/api/clients";
+import { Client, getClients } from "@/lib/api/clients";
+import { useEffect, useState } from "react";
 
 interface ClientSelectorProps {
   value: string;
