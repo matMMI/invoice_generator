@@ -27,9 +27,7 @@ function persistNotifiedSet(set: Set<string>) {
     const arr = Array.from(set);
     const trimmed = arr.length > 500 ? arr.slice(-500) : arr;
     localStorage.setItem(NOTIFIED_KEY, JSON.stringify(trimmed));
-  } catch {
-    // localStorage full or unavailable
-  }
+  } catch {}
 }
 
 function markNotified(quoteId: string | number, status: string) {
@@ -51,7 +49,6 @@ function seedCurrentStatuses(quotes: Quote[]) {
   }
   persistNotifiedSet(set);
 }
-// --- end notification tracking ---
 
 interface GlobalActivityContextType {
   quotes: Quote[];
@@ -168,7 +165,6 @@ export function GlobalActivityProvider({
     }
   }, [quotes, router]);
 
-  // Notify other tabs + refresh this tab
   const notifyChange = (
     type:
       | "quote_created"

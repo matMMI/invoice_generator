@@ -48,6 +48,28 @@ cd devis_generator_api
 
 ---
 
+## Variables d'environnement
+
+### BETTER_AUTH_SECRET
+
+Secret utilisé par Better Auth pour signer les sessions et tokens. Doit faire au moins 32 caractères.
+
+```bash
+# Avec openssl
+openssl rand -base64 32
+
+# Avec Node.js
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+Copier la valeur dans `.env.local` :
+
+```
+BETTER_AUTH_SECRET=<valeur_generee>
+```
+
+---
+
 ## Stack
 
 - **Frontend** : Next.js 15, React 19, Tailwind CSS, shadcn/ui

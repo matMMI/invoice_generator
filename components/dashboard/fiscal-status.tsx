@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FiscalRevenue } from "@/lib/api/dashboard";
-import { Progress } from "@/components/ui/progress";
 import { AlertCircle, TrendingUp } from "lucide-react";
 
 interface FiscalStatusProps {
@@ -12,6 +11,7 @@ interface FiscalStatusProps {
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/formatters";
+import { MICRO_CEILING, VAT_THRESHOLD, URSSAF_RATE } from "@/lib/fiscal";
 
 export function FiscalStatus({ data, loading }: FiscalStatusProps) {
   if (loading || !data) {
@@ -45,11 +45,11 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
     );
   }
 
-  const MICRO_CEILING = 77700;
-  const VAT_THRESHOLD = 37500;
-  const URSSAF_RATE = 0.22;
-  const progress = (data.year_to_date / MICRO_CEILING) * 100;
+  const progress = Math.min((data.year_to_date / MICRO_CEILING) * 100, 100);
+  const vatMarkerPos = (VAT_THRESHOLD / MICRO_CEILING) * 100;
   const urssafEstimate = data.quarter_to_date * URSSAF_RATE;
+  const pastVat = data.year_to_date > VAT_THRESHOLD;
+  const pastMicro = data.year_to_date > MICRO_CEILING;
 
   return (
     <Card className="h-full border-0 shadow-none bg-transparent">
@@ -64,17 +64,49 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
           <div>
             <div className="flex justify-between text-sm mb-2">
               <span className="text-muted-foreground">
-                Plafond CA (Services)
+                CA annuel (Services)
               </span>
               <span className="font-bold">
-                {formatCurrency(data.year_to_date)} /{" "}
-                {formatCurrency(MICRO_CEILING)}
+                {formatCurrency(data.year_to_date)}
               </span>
             </div>
-            <Progress value={progress} className="h-2" />
-            <p className="text-xs text-muted-foreground mt-1 text-right">
-              {progress.toFixed(1)}% du plafond
-            </p>
+
+            {/* Progress bar with TVA threshold marker */}
+            <div className="relative">
+              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    pastMicro
+                      ? "bg-red-500"
+                      : pastVat
+                        ? "bg-yellow-500"
+                        : "bg-emerald-500"
+                  }`}
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              {/* TVA threshold marker */}
+              <div
+                className="absolute top-0 h-2 w-0.5 bg-yellow-600 dark:bg-yellow-400"
+                style={{ left: `${vatMarkerPos}%` }}
+                title={`Seuil TVA : ${formatCurrency(VAT_THRESHOLD)}`}
+              />
+            </div>
+
+            {/* Legend */}
+            <div className="flex justify-between items-center mt-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 rounded-full bg-yellow-600 dark:bg-yellow-400" />
+                  TVA {formatCurrency(VAT_THRESHOLD)}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
+                  Plafond {formatCurrency(MICRO_CEILING)}
+                </span>
+              </div>
+              <span>{progress.toFixed(1)}%</span>
+            </div>
           </div>
 
           <div className="pt-4 border-t">
@@ -91,10 +123,17 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
             </p>
           </div>
 
-          {data.year_to_date > VAT_THRESHOLD && (
+          {pastVat && !pastMicro && (
             <div className="flex items-center gap-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-md text-xs">
-              <AlertCircle className="h-4 w-4" />
-              <span>Attention : Seuil de franchise TVA dépassé (37 500€)</span>
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>Seuil de franchise TVA dépassé ({formatCurrency(VAT_THRESHOLD)}) — tu dois facturer la TVA</span>
+            </div>
+          )}
+
+          {pastMicro && (
+            <div className="flex items-center gap-2 p-2 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded-md text-xs">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>Plafond micro-entreprise dépassé ({formatCurrency(MICRO_CEILING)}) — changement de régime obligatoire</span>
             </div>
           )}
         </div>

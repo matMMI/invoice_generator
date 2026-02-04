@@ -7,6 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+
 import {
   Card,
   CardContent,
@@ -82,7 +83,21 @@ export function Overview({ data, loading }: OverviewProps) {
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={
+                <ChartTooltipContent
+                  hideLabel
+                  formatter={(value) => (
+                    <div className="flex flex-1 justify-between gap-2 items-center leading-none">
+                      <span className="text-muted-foreground">
+                        Chiffre d&apos;affaires
+                      </span>
+                      <span className="text-foreground font-mono font-medium tabular-nums">
+                        {Number(value).toLocaleString("fr-FR")} €
+                      </span>
+                    </div>
+                  )}
+                />
+              }
             />
             <Bar
               dataKey="total"

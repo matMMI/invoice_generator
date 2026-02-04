@@ -13,7 +13,8 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/clients") ||
     path.startsWith("/quotes") ||
     path.startsWith("/dashboard") ||
-    path.startsWith("/settings");
+    path.startsWith("/settings") ||
+    path.startsWith("/profile");
 
   // Validate session server-side by calling the auth API
   let isAuthenticated = false;
@@ -53,5 +54,7 @@ export const config = {
     "/clients/:path*",
     "/quotes/:path*",
     "/dashboard/:path*",
+    "/profile/:path*",
+    "/settings/:path*",
   ],
 };

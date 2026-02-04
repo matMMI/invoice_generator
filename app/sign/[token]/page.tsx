@@ -99,7 +99,10 @@ export default function SignQuotePage() {
       toast.error("Veuillez entrer votre nom");
       return;
     }
-    if (!signerEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signerEmail)) {
+    if (
+      !signerEmail.trim() ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signerEmail)
+    ) {
       toast.error("Veuillez entrer une adresse email valide");
       return;
     }
@@ -359,9 +362,7 @@ export default function SignQuotePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="signer-function">
-                  Fonction (optionnel)
-                </Label>
+                <Label htmlFor="signer-function">Fonction (optionnel)</Label>
                 <Input
                   id="signer-function"
                   placeholder="Directeur technique, Gérant..."
@@ -383,7 +384,9 @@ export default function SignQuotePage() {
 
               <Button
                 onClick={handleSign}
-                disabled={signing || !signerName || !signerEmail || !signatureData}
+                disabled={
+                  signing || !signerName || !signerEmail || !signatureData
+                }
                 className="w-full"
                 size="lg"
               >

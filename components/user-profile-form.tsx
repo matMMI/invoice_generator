@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 const profileSchema = z.object({
   username: z
@@ -45,6 +45,7 @@ export function UserProfileForm({ user }: { user: any }) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -80,16 +81,45 @@ export function UserProfileForm({ user }: { user: any }) {
 
   const onPasswordSubmit = async (values: z.infer<typeof passwordSchema>) => {
     setPasswordLoading(true);
+    setPasswordError(null);
     try {
-      await authClient.changePassword({
+      const response = await authClient.changePassword({
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
         revokeOtherSessions: true,
       });
-      toast.success("Mot de passe modifié avec succès");
-      passwordForm.reset();
+
+      // Better Auth returns response with error field if there's an error
+      if (response.error) {
+        const errorMessage = response.error.message || "Erreur lors du changement de mot de passe";
+        const lowerMessage = errorMessage.toLowerCase();
+
+        // Display password-related errors in red alert box
+        if (lowerMessage.includes("invalid") ||
+            lowerMessage.includes("password too") ||
+            lowerMessage.includes("credential")) {
+          setPasswordError(errorMessage);
+        } else {
+          toast.error(errorMessage);
+        }
+      } else {
+        // Success
+        toast.success("Mot de passe modifié avec succès");
+        passwordForm.reset();
+        setPasswordError(null);
+      }
     } catch (error: any) {
-      toast.error(error.message || "Erreur lors du changement de mot de passe");
+      const errorMessage = error.message || "Erreur lors du changement de mot de passe";
+      const lowerMessage = errorMessage.toLowerCase();
+
+      // Fallback for caught exceptions
+      if (lowerMessage.includes("invalid") ||
+          lowerMessage.includes("password too") ||
+          lowerMessage.includes("credential")) {
+        setPasswordError(errorMessage);
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setPasswordLoading(false);
     }
@@ -218,6 +248,15 @@ export function UserProfileForm({ user }: { user: any }) {
                 className="hidden"
                 autoComplete="new-password"
               />
+
+              {/* Password error alert with fluid animation */}
+              {passwordError && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300 flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded-md border border-red-200 dark:border-red-800">
+                  <AlertCircle className="h-5 w-5 shrink-0" />
+                  <span className="text-sm font-medium">{passwordError}</span>
+                </div>
+              )}
+
               <FormField
                 control={passwordForm.control}
                 name="currentPassword"
