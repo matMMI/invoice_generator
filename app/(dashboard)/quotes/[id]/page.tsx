@@ -339,7 +339,7 @@ export default function QuoteDetailPage() {
                 <CardTitle>Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground whitespace-pre-wrap">
+                <p className="text-muted-foreground whitespace-pre-wrap wrap-break-word overflow-hidden">
                   {quote.notes}
                 </p>
               </CardContent>

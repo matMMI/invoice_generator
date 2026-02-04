@@ -44,6 +44,11 @@ export function QuoteCard({ quote, isLoading }: QuoteCardProps) {
             </CardTitle>
             <StatusBadge status={quote.status} />
           </div>
+          {quote.client_name && (
+            <p className="text-sm text-muted-foreground truncate">
+              {quote.client_name}
+            </p>
+          )}
           <div className="text-sm text-muted-foreground">
             {new Date(quote.created_at).toLocaleDateString()}
           </div>
