@@ -215,10 +215,10 @@ export default function SignQuotePage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-muted/30 py-4 px-2 sm:px-4">
+      <div className="max-w-4xl mx-auto space-y-4 overflow-hidden">
         {/* Header */}
-        <div className="flex flex-col items-center justify-center text-center mb-8 space-y-4">
+        <div className="flex flex-col items-center justify-center text-center mb-4 space-y-3">
           <FileText className="h-12 w-12 text-primary" />
           <div>
             <h1 className="text-2xl font-bold">Signature de Devis</h1>
@@ -238,19 +238,19 @@ export default function SignQuotePage() {
           </Button>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-4">
           {/* Quote Details */}
           <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle>Devis n°{quote.quote_number}</CardTitle>
-                  <CardDescription>
+            <CardHeader className="px-3 sm:px-6 py-4">
+              <div className="flex justify-between items-start gap-4">
+                <div className="min-w-0">
+                  <CardTitle className="truncate">Devis n°{quote.quote_number}</CardTitle>
+                  <CardDescription className="wrap-break-word">
                     Pour : {quote.client_name}
                     {quote.client_company && ` (${quote.client_company})`}
                   </CardDescription>
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <p className="text-2xl font-bold text-primary">
                     {formatCurrency(quote.total, quote.currency)}
                   </p>
@@ -258,26 +258,26 @@ export default function SignQuotePage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="px-3 sm:px-6 pb-4 pt-0 space-y-4">
               <div className="rounded-lg border overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted">
                     <tr>
-                      <th className="text-left p-3 font-medium">Description</th>
-                      <th className="text-right p-3 font-medium">Qté</th>
-                      <th className="text-right p-3 font-medium">Prix unit.</th>
-                      <th className="text-right p-3 font-medium">Total</th>
+                      <th className="text-left p-2 sm:p-3 font-medium">Description</th>
+                      <th className="text-right p-2 sm:p-3 font-medium">Qté</th>
+                      <th className="text-right p-2 sm:p-3 font-medium">Prix unit.</th>
+                      <th className="text-right p-2 sm:p-3 font-medium">Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {quote.items.map((item, index) => (
                       <tr key={index} className="border-t">
-                        <td className="p-3">{item.description}</td>
-                        <td className="p-3 text-right">{item.quantity}</td>
-                        <td className="p-3 text-right">
+                        <td className="p-2 sm:p-3 wrap-break-word max-w-50 sm:max-w-none">{item.description}</td>
+                        <td className="p-2 sm:p-3 text-right whitespace-nowrap">{item.quantity}</td>
+                        <td className="p-2 sm:p-3 text-right whitespace-nowrap">
                           {formatCurrency(item.unit_price, quote.currency)}
                         </td>
-                        <td className="p-3 text-right font-medium">
+                        <td className="p-2 sm:p-3 text-right font-medium whitespace-nowrap">
                           {formatCurrency(item.total, quote.currency)}
                         </td>
                       </tr>
@@ -312,34 +312,33 @@ export default function SignQuotePage() {
                 </div>
               </div>
 
-              {quote.notes && (
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <p className="text-sm font-medium mb-1">Notes</p>
-                  <p className="text-sm text-muted-foreground">{quote.notes}</p>
-                </div>
-              )}
-
-              {quote.payment_terms && (
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <p className="text-sm font-medium mb-1">
-                    Conditions de paiement
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {quote.payment_terms}
-                  </p>
+              {(quote.notes || quote.payment_terms) && (
+                <div className="space-y-2 text-sm">
+                  {quote.notes && (
+                    <div className="bg-muted/50 rounded-md px-3 py-2">
+                      <span className="font-medium">Notes :</span>{" "}
+                      <span className="text-muted-foreground wrap-break-word whitespace-pre-line">{quote.notes}</span>
+                    </div>
+                  )}
+                  {quote.payment_terms && (
+                    <div className="bg-muted/50 rounded-md px-3 py-2">
+                      <span className="font-medium">Conditions de paiement :</span>{" "}
+                      <span className="text-muted-foreground wrap-break-word whitespace-pre-line">{quote.payment_terms}</span>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="px-3 sm:px-6 py-4">
               <CardTitle>Signature électronique</CardTitle>
               <CardDescription>
                 En signant, vous acceptez les termes de ce devis
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="px-3 sm:px-6 pb-4 pt-0 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="signer-name">Votre nom complet</Label>
                 <Input
