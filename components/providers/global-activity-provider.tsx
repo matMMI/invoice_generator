@@ -100,9 +100,9 @@ export function GlobalActivityProvider({
     isLoading,
     mutate,
   } = useSWR("global-quotes", fetchQuotes, {
-    refreshInterval: 15000,
+    refreshInterval: 60000,
     revalidateOnFocus: true,
-    dedupingInterval: 5000,
+    dedupingInterval: 10000,
     compare: (a, b) => JSON.stringify(a) === JSON.stringify(b),
   });
 

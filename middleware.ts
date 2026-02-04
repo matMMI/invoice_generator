@@ -16,24 +16,11 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/settings") ||
     path.startsWith("/profile");
 
-  // Validate session server-side by calling the auth API
-  let isAuthenticated = false;
-  if (sessionCookie?.value) {
-    try {
-      const baseUrl = request.nextUrl.origin;
-      const res = await fetch(`${baseUrl}/auth/get-session`, {
-        headers: {
-          cookie: `${sessionCookie.name}=${sessionCookie.value}`,
-        },
-      });
-      isAuthenticated = res.ok;
-    } catch {
-      // If validation fails, treat as unauthenticated
-      isAuthenticated = false;
-    }
-  }
+  // Check cookie presence only — actual session validation happens in API routes.
+  // Calling /auth/get-session here caused rate-limit (429) storms in production.
+  const hasSession = !!sessionCookie?.value;
 
-  if (isAuthenticated) {
+  if (hasSession) {
     if (isAuthPage) {
       return NextResponse.redirect(new URL("/", request.url));
     }

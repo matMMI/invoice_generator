@@ -77,7 +77,7 @@ export default function QuoteDetailPage() {
   } = useSWR<Quote>(
     quoteId ? `/api/quotes/${quoteId}` : null,
     () => getQuote(quoteId),
-    { refreshInterval: 5000 }
+    { refreshInterval: 30000, dedupingInterval: 10000 }
   );
   useEffect(() => {
     async function loadClient() {

@@ -1,18 +1,15 @@
 import { auth } from "@/lib/auth";
 import { toNextJsHandler } from "better-auth/next-js";
 import { NextResponse } from "next/server";
-
 const handler = toNextJsHandler(auth);
-
 const allowedOrigins = ["http://localhost:3000", "http://127.0.0.1:3000"];
-
 function getAllowedOrigin(request: Request): string | null {
   const origin = request.headers.get("origin") || "";
   return allowedOrigins.includes(origin) ? origin : null;
 }
 
 function addCorsHeaders(response: Response, origin: string | null): Response {
-  if (!origin) return response; // Don't add CORS headers for disallowed origins
+  if (!origin) return response;
 
   const newHeaders = new Headers(response.headers);
   newHeaders.set("Access-Control-Allow-Origin", origin);
@@ -35,7 +32,6 @@ export async function POST(request: Request) {
   return addCorsHeaders(response, getAllowedOrigin(request));
 }
 
-// Handle CORS preflight for local development
 export async function OPTIONS(request: Request) {
   const origin = getAllowedOrigin(request);
   if (!origin) {
