@@ -174,11 +174,9 @@ export default function QuoteDetailPage() {
   const handleCopyUrl = async () => {
     if (!shareUrl) return;
     try {
-      // Try modern Clipboard API first
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(shareUrl);
       } else {
-        // Fallback for mobile/older browsers
         const textArea = document.createElement("textarea");
         textArea.value = shareUrl;
         textArea.style.position = "fixed";
@@ -227,44 +225,45 @@ export default function QuoteDetailPage() {
   return (
     <div className="page-container">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+        <div className="flex items-center gap-3 min-w-0">
+          <Button variant="ghost" size="icon" className="shrink-0" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+          <div className="min-w-0">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">
               {quote.quote_number}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Créé le {new Date(quote.created_at).toLocaleDateString("fr-FR")}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <Link href={`/quotes/${quote.id}/edit`}>
-            <Button variant="outline">
-              <Edit className="mr-2 h-4 w-4" />
-              Modifier
+            <Button variant="outline" size="sm">
+              <Edit className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Modifier</span>
             </Button>
           </Link>
 
           <Button
             variant="outline"
+            size="sm"
             onClick={handleGeneratePdf}
             disabled={generatingPdf}
           >
             {generatingPdf ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
             ) : (
-              <FileDown className="mr-2 h-4 w-4" />
+              <FileDown className="h-4 w-4 sm:mr-2" />
             )}
-            {generatingPdf ? "Génération..." : "Télécharger PDF"}
+            <span className="hidden sm:inline">{generatingPdf ? "Génération..." : "PDF"}</span>
           </Button>
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" disabled={deleting}>
+              <Button variant="destructive" size="sm" disabled={deleting}>
                 {deleting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
@@ -299,31 +298,31 @@ export default function QuoteDetailPage() {
         </div>
       </div>
       <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-2 space-y-6">
+        <div className="md:col-span-2 space-y-6 min-w-0">
           <Card>
             <CardHeader>
               <CardTitle>Articles</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-2 sm:px-6">
               <div className="border rounded-lg overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full text-sm">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="text-left p-3 font-medium">Description</th>
-                      <th className="text-right p-3 font-medium">Qté</th>
-                      <th className="text-right p-3 font-medium">Prix Unit.</th>
-                      <th className="text-right p-3 font-medium">Total</th>
+                      <th className="text-left p-2 sm:p-3 font-medium">Description</th>
+                      <th className="text-right p-2 sm:p-3 font-medium whitespace-nowrap">Qté</th>
+                      <th className="text-right p-2 sm:p-3 font-medium whitespace-nowrap">Prix Unit.</th>
+                      <th className="text-right p-2 sm:p-3 font-medium whitespace-nowrap">Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {quote.items.map((item, index) => (
                       <tr key={item.id || index} className="border-t">
-                        <td className="p-3">{item.description}</td>
-                        <td className="p-3 text-right">{item.quantity}</td>
-                        <td className="p-3 text-right">
+                        <td className="p-2 sm:p-3 wrap-break-word">{item.description}</td>
+                        <td className="p-2 sm:p-3 text-right whitespace-nowrap">{item.quantity}</td>
+                        <td className="p-2 sm:p-3 text-right whitespace-nowrap">
                           {formatCurrency(item.unit_price)}
                         </td>
-                        <td className="p-3 text-right font-medium">
+                        <td className="p-2 sm:p-3 text-right font-medium whitespace-nowrap">
                           {formatCurrency(item.total || 0)}
                         </td>
                       </tr>
@@ -406,16 +405,16 @@ export default function QuoteDetailPage() {
             </CardHeader>
             <CardContent>
               {client ? (
-                <div className="space-y-1">
-                  <p className="font-bold text-lg text-primary">
+                <div className="space-y-1 min-w-0">
+                  <p className="font-bold text-lg text-primary truncate">
                     {client.name}
                   </p>
                   {client.company && (
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {client.company}
                     </p>
                   )}
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground truncate">
                     {client.email}
                   </p>
                 </div>
