@@ -104,7 +104,8 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
       onSubmit={handleSubmit(onSubmit, (fieldErrors) => {
         const messages: string[] = [];
         if (fieldErrors.client_id) messages.push("Client manquant");
-        if (fieldErrors.items?.message) messages.push(fieldErrors.items.message);
+        if (fieldErrors.items?.message)
+          messages.push(fieldErrors.items.message);
         if (Array.isArray(fieldErrors.items)) {
           const badLines = fieldErrors.items
             .map((item, i) => (item ? i + 1 : null))
@@ -120,7 +121,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
         );
       })}
     >
-      <div className="grid gap-6 p-6 border rounded-lg bg-card">
+      <div className="grid gap-6 p-6 border rounded-lg bg-card min-w-0">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label>Client *</Label>
@@ -134,13 +135,17 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           <Label>Facturation *</Label>
           <LineItemsEditor
             items={items}
             onChange={(newItems) => setValue("items", newItems)}
             currency={currency}
-            itemErrors={isSubmitted && Array.isArray(errors.items) ? errors.items : undefined}
+            itemErrors={
+              isSubmitted && Array.isArray(errors.items)
+                ? errors.items
+                : undefined
+            }
           />
           {errors.items && (
             <p className="text-sm text-red-500">{errors.items.message}</p>

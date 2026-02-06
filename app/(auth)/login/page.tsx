@@ -65,7 +65,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <div
+      className="h-dvh flex items-center justify-center px-4 py-4 relative overflow-hidden"
+      style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+    >
       <div className="w-full max-w-md">
         <Card className="border-0 shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
           <CardContent>

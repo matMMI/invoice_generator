@@ -10,7 +10,7 @@ export default function DashboardLayout({
     <div className="flex min-h-screen flex-col">
       <GlobalActivityProvider>
         <MainNav />
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 min-w-0">{children}</div>
       </GlobalActivityProvider>
     </div>
   );
