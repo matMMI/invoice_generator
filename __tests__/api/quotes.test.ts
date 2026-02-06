@@ -1,7 +1,15 @@
 /**
  * @jest-environment jsdom
  */
-import { getQuote, getQuotes, QuoteStatus, Currency } from "@/lib/api/quotes";
+import {
+  getQuote,
+  getQuotes,
+  createQuote,
+  updateQuote,
+  deleteQuote,
+  QuoteStatus,
+  Currency,
+} from "@/lib/api/quotes";
 import * as authClient from "@/lib/auth-client";
 
 // Mock auth client
@@ -156,6 +164,111 @@ describe("Quotes API", () => {
       });
 
       await expect(getQuotes()).rejects.toThrow("Failed to fetch quotes");
+    });
+  });
+
+  describe("createQuote", () => {
+    const createData = {
+      client_id: "client-1",
+      currency: Currency.EUR,
+      tax_rate: 20,
+      items: [{ description: "Service", quantity: 1, unit_price: 100 }],
+    };
+
+    it("should send POST request with correct body", async () => {
+      const mockCreated = { id: "new-quote", ...createData };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => mockCreated,
+      });
+
+      const result = await createQuote(createData);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/quotes"),
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify(createData),
+        })
+      );
+      expect(result.id).toBe("new-quote");
+    });
+
+    it("should throw with detail message on error", async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        json: async () => ({ detail: "Client not found" }),
+      });
+
+      await expect(createQuote(createData)).rejects.toThrow("Client not found");
+    });
+
+    it("should throw when not authenticated", async () => {
+      (authClient.authClient.getSession as jest.Mock).mockResolvedValue({
+        data: { session: { token: null } },
+      });
+
+      await expect(createQuote(createData)).rejects.toThrow(
+        "Not authenticated"
+      );
+    });
+  });
+
+  describe("updateQuote", () => {
+    it("should send PUT request with data", async () => {
+      const updateData = { tax_rate: 10, notes: "Updated" };
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: "q-1", ...updateData }),
+      });
+
+      const result = await updateQuote("q-1", updateData);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/quotes/q-1"),
+        expect.objectContaining({
+          method: "PUT",
+          body: JSON.stringify(updateData),
+        })
+      );
+      expect(result.tax_rate).toBe(10);
+    });
+
+    it("should throw on server error", async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: false });
+
+      await expect(updateQuote("q-1", {})).rejects.toThrow(
+        "Failed to update quote"
+      );
+    });
+  });
+
+  describe("deleteQuote", () => {
+    it("should send DELETE request", async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
+
+      await deleteQuote("q-1");
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/quotes/q-1"),
+        expect.objectContaining({ method: "DELETE" })
+      );
+    });
+
+    it("should throw on server error", async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: false });
+
+      await expect(deleteQuote("q-1")).rejects.toThrow(
+        "Failed to delete quote"
+      );
+    });
+
+    it("should throw when not authenticated", async () => {
+      (authClient.authClient.getSession as jest.Mock).mockResolvedValue({
+        data: { session: { token: null } },
+      });
+
+      await expect(deleteQuote("q-1")).rejects.toThrow("Not authenticated");
     });
   });
 });

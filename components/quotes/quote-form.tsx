@@ -33,7 +33,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitted },
   } = useForm<QuoteFormValues>({
     resolver: zodResolver(quoteFormSchema),
     defaultValues: initialData
@@ -101,8 +101,23 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit, () => {
-        toast.error("Veuillez corriger les erreurs du formulaire");
+      onSubmit={handleSubmit(onSubmit, (fieldErrors) => {
+        const messages: string[] = [];
+        if (fieldErrors.client_id) messages.push("Client manquant");
+        if (fieldErrors.items?.message) messages.push(fieldErrors.items.message);
+        if (Array.isArray(fieldErrors.items)) {
+          const badLines = fieldErrors.items
+            .map((item, i) => (item ? i + 1 : null))
+            .filter(Boolean);
+          if (badLines.length > 0)
+            messages.push(`Ligne(s) ${badLines.join(", ")} invalide(s)`);
+        }
+        if (fieldErrors.tax_rate) messages.push("Taux de TVA invalide");
+        toast.error(
+          messages.length > 0
+            ? messages.join(" — ")
+            : "Veuillez corriger les erreurs du formulaire"
+        );
       })}
     >
       <div className="grid gap-6 p-6 border rounded-lg bg-card">
@@ -125,6 +140,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
             items={items}
             onChange={(newItems) => setValue("items", newItems)}
             currency={currency}
+            itemErrors={isSubmitted && Array.isArray(errors.items) ? errors.items : undefined}
           />
           {errors.items && (
             <p className="text-sm text-red-500">{errors.items.message}</p>

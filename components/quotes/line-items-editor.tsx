@@ -12,17 +12,26 @@ import {
 } from "@/components/ui/table";
 import { QuoteItem } from "@/lib/api/quotes";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
+import type { FieldError, Merge, FieldErrorsImpl } from "react-hook-form";
+
+type ItemError = Merge<FieldError, FieldErrorsImpl<{
+  description: FieldError;
+  quantity: FieldError;
+  unit_price: FieldError;
+}>>;
 
 interface LineItemsEditorProps {
   items: QuoteItem[];
   onChange: (items: QuoteItem[]) => void;
   currency: string;
+  itemErrors?: (ItemError | undefined)[];
 }
 
 export function LineItemsEditor({
   items,
   onChange,
   currency,
+  itemErrors,
 }: LineItemsEditorProps) {
   const handleAddItem = () => {
     const newItem: QuoteItem = {
@@ -77,16 +86,24 @@ export function LineItemsEditor({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item, index) => (
-              <TableRow key={index}>
+            {items.map((item, index) => {
+              const rowError = itemErrors?.[index];
+              return (
+              <TableRow key={index} className={rowError ? "bg-red-50/50 dark:bg-red-950/10" : ""}>
                 <TableCell>
-                  <Input
-                    value={item.description}
-                    onChange={(e) =>
-                      handleChange(index, "description", e.target.value)
-                    }
-                    placeholder="Description de l'article"
-                  />
+                  <div className="space-y-1">
+                    <Input
+                      value={item.description}
+                      onChange={(e) =>
+                        handleChange(index, "description", e.target.value)
+                      }
+                      placeholder="Description de l'article"
+                      className={rowError?.description ? "border-red-500" : ""}
+                    />
+                    {rowError?.description?.message != null && (
+                      <p className="text-xs text-red-500">{String(rowError.description.message)}</p>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="relative flex items-center">
@@ -94,7 +111,7 @@ export function LineItemsEditor({
                       type="number"
                       min="0"
                       step="1"
-                      className="text-right pr-7"
+                      className={`text-right pr-7 ${rowError?.quantity ? "border-red-500" : ""}`}
                       value={item.quantity}
                       onChange={(e) =>
                         handleChange(
@@ -139,7 +156,7 @@ export function LineItemsEditor({
                       type="number"
                       min="0"
                       step="1"
-                      className="text-right pr-7"
+                      className={`text-right pr-7 ${rowError?.unit_price ? "border-red-500" : ""}`}
                       value={item.unit_price}
                       onChange={(e) =>
                         handleChange(
@@ -197,7 +214,8 @@ export function LineItemsEditor({
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
+              );
+            })}
           </TableBody>
         </Table>
       </div>

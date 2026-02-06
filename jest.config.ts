@@ -18,6 +18,14 @@ const config: Config = {
     ],
   },
   testMatch: ["**/__tests__/**/*.test.[jt]s?(x)"],
+  collectCoverageFrom: [
+    "app/**/*.{ts,tsx}",
+    "components/**/*.{ts,tsx}",
+    "lib/**/*.{ts,tsx}",
+    "!**/*.d.ts",
+    "!**/node_modules/**",
+    "!components/ui/**",
+  ],
 };
 
 export default config;
