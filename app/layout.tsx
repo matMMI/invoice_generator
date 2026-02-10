@@ -12,6 +12,14 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "Devis Generator",
   description: "Professional quote and invoice generator",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export const viewport: Viewport = {
