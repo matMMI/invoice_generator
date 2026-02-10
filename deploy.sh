@@ -46,13 +46,20 @@ fi
 
 # Git operations
 echo -e "${BLUE}📦 Adding changes to git...${NC}"
-git add -u  # Only stage tracked files, never new untracked files
+git add .
+
+# Check if there are changes to commit
+if git diff --cached --quiet; then
+    echo -e "${RED}❌ No changes to commit. Aborting.${NC}"
+    exit 1
+fi
 
 echo -e "${BLUE}💾 Committing changes...${NC}"
 git commit -m "$COMMIT_MSG"
 
-echo -e "${BLUE}⬆️  Pushing to GitHub (main branch)...${NC}"
-git push origin main
+BRANCH=$(git branch --show-current)
+echo -e "${BLUE}⬆️  Pushing to GitHub ($BRANCH branch)...${NC}"
+git push origin "$BRANCH"
 
 echo -e "${GREEN}✅ Deployment complete!${NC}"
 echo -e "${GREEN}Vercel will automatically deploy from main branch.${NC}"
