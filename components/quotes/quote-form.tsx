@@ -41,10 +41,14 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
           client_id: initialData.client_id,
           currency: initialData.currency,
           tax_rate: Number(initialData.tax_rate),
+          deposit_percentage: initialData.deposit_percentage
+            ? Number(initialData.deposit_percentage)
+            : undefined,
           notes: initialData.notes || "",
           items: initialData.items.map((item) => ({
             id: item.id,
             description: item.description,
+            detailed_description: item.detailed_description,
             quantity: Number(item.quantity),
             unit_price: Number(item.unit_price),
             order: Number(item.order) || 0,
@@ -54,6 +58,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
           client_id: "",
           currency: Currency.EUR,
           tax_rate: 20,
+          deposit_percentage: undefined,
           notes: "",
           items: [{ description: "", quantity: 1, unit_price: 0, order: 0 }],
         },
@@ -76,6 +81,7 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
   const items = watch("items");
   const taxRate = watch("tax_rate");
   const currency = watch("currency");
+  const depositPercentage = watch("deposit_percentage");
 
   const onSubmit = async (data: QuoteFormValues) => {
     try {
@@ -156,7 +162,11 @@ export function QuoteForm({ mode = "create", initialData }: QuoteFormProps) {
           items={items}
           currency={currency}
           taxRate={taxRate}
+          depositPercentage={depositPercentage}
           onTaxRateChange={(rate) => setValue("tax_rate", rate)}
+          onDepositPercentageChange={(percentage) =>
+            setValue("deposit_percentage", percentage)
+          }
           hideTaxRate={isFranchise}
         />
 

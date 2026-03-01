@@ -169,7 +169,7 @@ export function SignatureCanvas({
         </p>
         <Button
           type="button"
-          variant="ghost"
+          variant="destructive"
           size="sm"
           onClick={clearSignature}
           disabled={!hasSignature}

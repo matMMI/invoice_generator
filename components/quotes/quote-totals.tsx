@@ -9,7 +9,9 @@ interface QuoteTotalsProps {
   items: QuoteItem[];
   currency: string;
   taxRate: number;
+  depositPercentage?: number;
   onTaxRateChange: (rate: number) => void;
+  onDepositPercentageChange?: (percentage: number) => void;
   hideTaxRate?: boolean;
 }
 
@@ -17,7 +19,9 @@ export function QuoteTotals({
   items,
   currency,
   taxRate,
+  depositPercentage,
   onTaxRateChange,
+  onDepositPercentageChange,
   hideTaxRate = false,
 }: QuoteTotalsProps) {
   const subtotal = items.reduce(
@@ -26,6 +30,7 @@ export function QuoteTotals({
   );
   const taxAmount = (subtotal * taxRate) / 100;
   const total = subtotal + taxAmount;
+  const depositAmount = depositPercentage ? (total * depositPercentage) / 100 : 0;
 
   const formatMoney = (amount: number) => {
     return amount.toLocaleString("fr-FR", {
@@ -74,6 +79,33 @@ export function QuoteTotals({
           <span>Total</span>
           <span>{formatMoney(total)}</span>
         </div>
+        
+        <div className="flex justify-between items-center gap-4 mt-4">
+          <Label
+            htmlFor="deposit-percentage"
+            className="text-sm text-muted-foreground whitespace-nowrap"
+          >
+            Acompte (%)
+          </Label>
+          <Input
+            id="deposit-percentage"
+            type="number"
+            min="0"
+            max="100"
+            step="1"
+            className="w-24 text-right h-8"
+            value={depositPercentage || ""}
+            onChange={(e) => onDepositPercentageChange && onDepositPercentageChange(Number(e.target.value))}
+            placeholder="30"
+          />
+        </div>
+        
+        {depositPercentage && depositPercentage > 0 && (
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-muted-foreground">Montant acompte</span>
+            <span>{formatMoney(depositAmount)}</span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

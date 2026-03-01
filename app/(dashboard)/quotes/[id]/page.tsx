@@ -1,4 +1,5 @@
 "use client";
+
 import { useGlobalActivity } from "@/components/providers/global-activity-provider";
 import { StatusBadge } from "@/components/status-badge";
 import {
@@ -51,7 +52,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 
@@ -61,6 +62,7 @@ export default function QuoteDetailPage() {
   const router = useRouter();
   const params = useParams();
   const quoteId = params.id as string;
+
   const [client, setClient] = useState<Client | null>(null);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -69,7 +71,9 @@ export default function QuoteDetailPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+
   const { notifyChange } = useGlobalActivity();
+
   const {
     data: quote,
     isLoading: loading,
@@ -79,18 +83,15 @@ export default function QuoteDetailPage() {
     () => getQuote(quoteId),
     { refreshInterval: 30000, dedupingInterval: 10000 }
   );
+
   useEffect(() => {
     async function loadClient() {
-      if (
-        quote &&
-        quote.client_id &&
-        (!client || client.id !== quote.client_id)
-      ) {
+      if (quote?.client_id && (!client || client.id !== quote.client_id)) {
         try {
           const clientData = await getClient(quote.client_id);
           setClient(clientData);
-        } catch (e) {
-          console.error("Failed to load client", e);
+        } catch (err) {
+          console.error("Impossible de charger le client", err);
         }
       }
     }
@@ -105,7 +106,7 @@ export default function QuoteDetailPage() {
       mutateQuote(updated, false);
       toast.success(`Statut mis à jour : ${newStatus}`);
       notifyChange("quote_updated");
-    } catch (e) {
+    } catch {
       toast.error("Échec de la mise à jour du statut");
     } finally {
       setStatusUpdating(false);
@@ -118,8 +119,8 @@ export default function QuoteDetailPage() {
     try {
       await generateQuotePdf(quote.id);
       toast.success("PDF téléchargé !");
-    } catch (e: any) {
-      toast.error(e.message || "Échec de la génération du PDF");
+    } catch (err: any) {
+      toast.error(err.message || "Échec de la génération du PDF");
     } finally {
       setGeneratingPdf(false);
     }
@@ -132,8 +133,9 @@ export default function QuoteDetailPage() {
       await deleteQuote(quote.id);
       toast.success("Devis supprimé");
       router.push("/quotes");
-    } catch (e) {
+    } catch {
       toast.error("Échec de la suppression du devis");
+    } finally {
       setDeleting(false);
     }
   };
@@ -144,6 +146,7 @@ export default function QuoteDetailPage() {
     try {
       const session = await authClient.getSession();
       const token = session.data?.session.token;
+
       const res = await fetch(`${API_BASE_URL}/api/quotes/${quote.id}/share`, {
         method: "POST",
         headers: {
@@ -151,11 +154,14 @@ export default function QuoteDetailPage() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!res.ok) {
         throw new Error("Échec de la génération du lien");
       }
+
       const data = await res.json();
       const fullUrl = `${window.location.origin}${data.share_url}`;
+
       setShareUrl(fullUrl);
       setShareDialogOpen(true);
 
@@ -164,8 +170,8 @@ export default function QuoteDetailPage() {
         notifyChange("quote_updated");
         toast.success("Statut passé à 'Envoyé' automatiquement");
       }
-    } catch (e: any) {
-      toast.error(e.message || "Échec du partage");
+    } catch (err: any) {
+      toast.error(err.message || "Échec du partage");
     } finally {
       setSharing(false);
     }
@@ -173,6 +179,7 @@ export default function QuoteDetailPage() {
 
   const handleCopyUrl = async () => {
     if (!shareUrl) return;
+
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(shareUrl);
@@ -188,6 +195,7 @@ export default function QuoteDetailPage() {
         document.execCommand("copy");
         document.body.removeChild(textArea);
       }
+
       setCopied(true);
       toast.success("Lien copié !");
       setTimeout(() => setCopied(false), 2000);
@@ -196,12 +204,11 @@ export default function QuoteDetailPage() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("fr-FR", {
+  const formatCurrency = (amount: number) =>
+    amount.toLocaleString("fr-FR", {
       style: "currency",
       currency: quote?.currency || "EUR",
     });
-  };
 
   if (loading) {
     return (
@@ -224,9 +231,15 @@ export default function QuoteDetailPage() {
 
   return (
     <div className="page-container">
+      {/* En-tête */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <Button variant="ghost" size="icon" className="shrink-0" onClick={() => router.back()}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            onClick={() => router.back()}
+          >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="min-w-0">
@@ -258,7 +271,9 @@ export default function QuoteDetailPage() {
             ) : (
               <FileDown className="h-4 w-4 sm:mr-2" />
             )}
-            <span className="hidden sm:inline">{generatingPdf ? "Génération..." : "PDF"}</span>
+            <span className="hidden sm:inline">
+              {generatingPdf ? "Génération..." : "PDF"}
+            </span>
           </Button>
 
           <AlertDialog>
@@ -275,8 +290,8 @@ export default function QuoteDetailPage() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Supprimer ce devis ?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Cette action est irréversible. Cela supprimera définitivement
-                  le devis {quote.quote_number}.
+                  Cette action est irréversible. Le devis {quote.quote_number}{" "}
+                  sera définitivement supprimé.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -287,9 +302,9 @@ export default function QuoteDetailPage() {
                   onClick={handleDelete}
                   disabled={deleting}
                 >
-                  {deleting ? (
+                  {deleting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
+                  )}
                   Supprimer
                 </Button>
               </AlertDialogFooter>
@@ -297,8 +312,9 @@ export default function QuoteDetailPage() {
           </AlertDialog>
         </div>
       </div>
+
       <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-2 space-y-6 min-w-0">
+        <div className="md:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Articles</CardTitle>
@@ -308,51 +324,80 @@ export default function QuoteDetailPage() {
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="text-left p-2 sm:p-3 font-medium">Description</th>
-                      <th className="text-right p-2 sm:p-3 font-medium whitespace-nowrap">Qté</th>
-                      <th className="text-right p-2 sm:p-3 font-medium whitespace-nowrap">Prix Unit.</th>
-                      <th className="text-right p-2 sm:p-3 font-medium whitespace-nowrap">Total</th>
+                      <th className="text-left p-3 font-medium">Description</th>
+                      <th className="text-right p-3 font-medium whitespace-nowrap">
+                        Qté
+                      </th>
+                      <th className="text-right p-3 font-medium whitespace-nowrap">
+                        Prix unitaire
+                      </th>
+                      <th className="text-right p-3 font-medium whitespace-nowrap">
+                        Total
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {quote.items.map((item, index) => (
-                      <tr key={item.id || index} className="border-t">
-                        <td className="p-2 sm:p-3 wrap-break-word">{item.description}</td>
-                        <td className="p-2 sm:p-3 text-right whitespace-nowrap">{item.quantity}</td>
-                        <td className="p-2 sm:p-3 text-right whitespace-nowrap">
-                          {formatCurrency(item.unit_price)}
-                        </td>
-                        <td className="p-2 sm:p-3 text-right font-medium whitespace-nowrap">
-                          {formatCurrency(item.total || 0)}
-                        </td>
-                      </tr>
+                      <React.Fragment key={item.id || index}>
+                        <tr className="border-t hover:bg-muted/30 transition-colors">
+                          <td className="p-3 break-words">
+                            {item.description}
+                          </td>
+                          <td className="p-3 text-right whitespace-nowrap">
+                            {item.quantity}
+                          </td>
+                          <td className="p-3 text-right whitespace-nowrap">
+                            {formatCurrency(item.unit_price)}
+                          </td>
+                          <td className="p-3 text-right font-medium whitespace-nowrap">
+                            {formatCurrency(item.total || 0)}
+                          </td>
+                        </tr>
+
+                        {item.detailed_description && (
+                          <tr>
+                            <td
+                              colSpan={4}
+                              className="p-3 bg-muted/40 border-t"
+                            >
+                              <div className="flex items-start gap-2.5 text-sm">
+                                <div className="flex-1 whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                                  {item.detailed_description}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     ))}
                   </tbody>
                 </table>
               </div>
             </CardContent>
           </Card>
+
           {quote.notes && (
             <Card>
               <CardHeader>
                 <CardTitle>Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground whitespace-pre-wrap wrap-break-word overflow-hidden">
+                <div className="whitespace-pre-wrap text-muted-foreground">
                   {quote.notes}
-                </p>
+                </div>
               </CardContent>
             </Card>
           )}
         </div>
+
         <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Statut</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               {quote.status === QuoteStatus.SIGNED ? (
-                <div className="flex justify-center py-2">
+                <div className="flex justify-center py-3">
                   <StatusBadge status={quote.status} className="scale-125" />
                 </div>
               ) : (
@@ -375,27 +420,27 @@ export default function QuoteDetailPage() {
                   </SelectContent>
                 </Select>
               )}
-              <div className="mt-4">
-                <Button
-                  variant="outline"
-                  onClick={handleShare}
-                  disabled={sharing || quote.status === QuoteStatus.SIGNED}
-                  className="w-full"
-                >
-                  {sharing ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="mr-2 h-4 w-4" />
-                  )}
-                  {sharing
-                    ? "Génération..."
-                    : quote.status === QuoteStatus.SIGNED
-                    ? "Devis signé"
-                    : "Faire signer le devis"}
-                </Button>
-              </div>
+
+              <Button
+                variant="outline"
+                onClick={handleShare}
+                disabled={sharing || quote.status === QuoteStatus.SIGNED}
+                className="w-full"
+              >
+                {sharing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="mr-2 h-4 w-4" />
+                )}
+                {sharing
+                  ? "Génération..."
+                  : quote.status === QuoteStatus.SIGNED
+                  ? "Devis signé"
+                  : "Faire signer le devis"}
+              </Button>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -405,16 +450,12 @@ export default function QuoteDetailPage() {
             </CardHeader>
             <CardContent>
               {client ? (
-                <div className="space-y-1 min-w-0">
-                  <p className="font-bold text-lg text-primary truncate">
-                    {client.name}
-                  </p>
+                <div className="space-y-1">
+                  <p className="font-bold text-lg">{client.name}</p>
                   {client.company && (
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {client.company}
-                    </p>
+                    <p className="text-sm font-medium">{client.company}</p>
                   )}
-                  <p className="text-sm text-muted-foreground truncate">
+                  <p className="text-sm text-muted-foreground">
                     {client.email}
                   </p>
                 </div>
@@ -423,6 +464,7 @@ export default function QuoteDetailPage() {
               )}
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Résumé</CardTitle>
@@ -438,6 +480,14 @@ export default function QuoteDetailPage() {
                 </span>
                 <span>{formatCurrency(quote.tax_amount)}</span>
               </div>
+              {quote.deposit_percentage && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">
+                    Acompte ({quote.deposit_percentage}%)
+                  </span>
+                  <span>{formatCurrency(quote.deposit_amount || 0)}</span>
+                </div>
+              )}
               <div className="border-t pt-3 flex justify-between font-bold text-lg">
                 <span>Total</span>
                 <span>{formatCurrency(quote.total)}</span>
@@ -446,13 +496,14 @@ export default function QuoteDetailPage() {
           </Card>
         </div>
       </div>
+
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Partager ce devis pour signature</DialogTitle>
             <DialogDescription>
-              Envoyez ce lien à votre client pour qu&apos;il puisse consulter et
-              signer électroniquement ce devis.
+              Envoyez ce lien à votre client pour qu'il puisse consulter et
+              signer électroniquement le devis.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -467,8 +518,8 @@ export default function QuoteDetailPage() {
               </Button>
             </div>
             <p className="text-sm text-muted-foreground">
-              Ce lien expire dans 30 jours. Le statut du devis passera à
-              &quot;Envoyé&quot;.
+              Ce lien expire dans 30 jours. Le statut du devis passera
+              automatiquement à « Envoyé ».
             </p>
           </div>
         </DialogContent>

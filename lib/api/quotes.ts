@@ -15,6 +15,7 @@ export enum QuoteStatus {
 export interface QuoteItem {
   id?: string;
   description: string;
+  detailed_description?: string;
   quantity: number;
   unit_price: number;
   total?: number;
@@ -34,6 +35,8 @@ export interface Quote {
   tax_rate: number;
   tax_amount: number;
   total: number;
+  deposit_percentage?: number;
+  deposit_amount?: number;
 
   notes?: string;
   payment_terms?: string;

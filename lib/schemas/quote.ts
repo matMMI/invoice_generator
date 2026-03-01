@@ -3,7 +3,8 @@ import { Currency } from "@/lib/api/quotes";
 
 export const quoteItemSchema = z.object({
   id: z.string().optional(),
-  description: z.string().min(1, "La description est requise"),
+  description: z.string().min(1, "Le libellé est requis"),
+  detailed_description: z.string().optional(),
   quantity: z.coerce
     .number({ invalid_type_error: "Quantité invalide" })
     .min(0.01, "La quantité doit être supérieure à 0"),
@@ -22,6 +23,11 @@ export const quoteFormSchema = z.object({
     .number()
     .min(0, "Le taux de TVA ne peut pas être négatif")
     .max(100, "Le taux de TVA ne peut pas dépasser 100%"),
+  deposit_percentage: z.coerce
+    .number()
+    .min(0, "Le pourcentage d'acompte ne peut pas être négatif")
+    .max(100, "Le pourcentage d'acompte ne peut pas dépasser 100%")
+    .optional(),
   notes: z.string().optional(),
   payment_terms: z.string().optional(),
   items: z
