@@ -330,7 +330,7 @@ export default function SignQuotePage() {
 
                     {quote.deposit_percentage && (
                       <div className="rounded-md bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800 px-4 py-3 space-y-2">
-                        <p className="text-xs text-orange-600 dark:text-orange-400">
+                        <p className="text-orange-600 dark:text-orange-400">
                           Après signature, vous vous engagez à régler dès que
                           possible un acompte de{" "}
                           <span className="underline font-bold">
@@ -390,7 +390,7 @@ export default function SignQuotePage() {
                         </thead>
                         <tbody>
                           {quote.items.map((item, index) => {
-                            const isExpanded = !!expandedItems[index];
+                            const isExpanded = expandedItems[index] !== false;
                             return (
                               <React.Fragment key={index}>
                                 <tr className="hover:cursor-pointer border-t group hover:bg-muted/10 transition-colors">
