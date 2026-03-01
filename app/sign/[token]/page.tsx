@@ -271,14 +271,17 @@ export default function SignQuotePage() {
                 Voir les détails du devis
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-none w-screen h-screen p-0 m-0 fixed top-0 left-0 translate-x-0 translate-y-0 sm:max-w-none rounded-none [&>button]:hidden">
+            <DialogContent className="max-w-none w-screen h-[100dvh] p-0 m-0 fixed top-0 left-0 translate-x-0 translate-y-0 sm:max-w-none rounded-none [&>button]:hidden">
               <DialogHeader className="sr-only">
                 <DialogTitle>Détails du devis</DialogTitle>
                 <DialogDescription>
                   Affichage des détails complets du devis
                 </DialogDescription>
               </DialogHeader>
-              <div className="w-full h-full overflow-y-auto">
+              <div
+                className="w-full h-full overflow-y-auto overscroll-contain pb-safe"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
                 <Card className="border-none shadow-none rounded-none">
                   <CardHeader className="px-3 sm:px-6 py-4">
                     <div className="flex items-center justify-between gap-4">
