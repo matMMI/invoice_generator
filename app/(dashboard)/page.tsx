@@ -12,7 +12,6 @@ import { FiscalStatus } from "@/components/dashboard/fiscal-status";
 import useSWR from "swr";
 import { onSyncMessage } from "@/lib/sync";
 import { RecentQuotes } from "@/components/dashboard/recent-quotes";
-import { URSSAF_RATE } from "@/lib/fiscal";
 export default function DashboardPage() {
   const {
     data: metrics,
@@ -32,7 +31,7 @@ export default function DashboardPage() {
     return unsubscribe;
   }, [mutate]);
   const netEstimate =
-    (metrics?.fiscal_revenue.year_to_date || 0) * (1 - URSSAF_RATE);
+    (metrics?.fiscal_revenue.year_to_date || 0) * (1 - (metrics?.fiscal_revenue.urssaf_rate || 0));
   const formatCurrency = (amount: number, currency: string) => {
     return amount.toLocaleString("fr-FR", {
       style: "currency",
@@ -139,7 +138,7 @@ export default function DashboardPage() {
               <div className="stats-value">
                 {formatCurrency(netEstimate, "EUR")}
               </div>
-              <p className="stats-subtitle">Après cotisations (~22%)</p>
+              <p className="stats-subtitle">Après cotisations (~{((metrics?.fiscal_revenue.urssaf_rate || 0) * 100).toFixed(1)}%)</p>
             </>
           )}
         </div>

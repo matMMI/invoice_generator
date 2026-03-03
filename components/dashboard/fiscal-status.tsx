@@ -10,7 +10,7 @@ interface FiscalStatusProps {
 }
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { MICRO_CEILING, URSSAF_RATE, VAT_THRESHOLD } from "@/lib/fiscal";
+import { MICRO_CEILING, VAT_THRESHOLD } from "@/lib/fiscal";
 import { formatCurrency } from "@/lib/formatters";
 
 export function FiscalStatus({ data, loading }: FiscalStatusProps) {
@@ -47,7 +47,7 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
 
   const progress = Math.min((data.year_to_date / MICRO_CEILING) * 100, 100);
   const vatMarkerPos = (VAT_THRESHOLD / MICRO_CEILING) * 100;
-  const urssafEstimate = data.quarter_to_date * URSSAF_RATE;
+  const urssafEstimate = data.quarter_to_date * data.urssaf_rate;
   const pastVat = data.year_to_date > VAT_THRESHOLD;
   const pastMicro = data.year_to_date > MICRO_CEILING;
 

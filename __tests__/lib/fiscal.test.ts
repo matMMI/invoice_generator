@@ -9,8 +9,8 @@ describe("Fiscal constants", () => {
     expect(VAT_THRESHOLD).toBe(37_500);
   });
 
-  it("URSSAF_RATE should be 22%", () => {
-    expect(URSSAF_RATE).toBe(0.22);
+  it("URSSAF_RATE should be 25.6% (BNC 2026)", () => {
+    expect(URSSAF_RATE).toBe(0.256);
   });
 
   it("VAT_THRESHOLD should be less than MICRO_CEILING", () => {

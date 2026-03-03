@@ -32,6 +32,7 @@ export interface FiscalRevenue {
   quarter_to_date: number;
   current_year: number;
   current_quarter: number;
+  urssaf_rate: number;
 }
 
 export interface DashboardMetrics {
