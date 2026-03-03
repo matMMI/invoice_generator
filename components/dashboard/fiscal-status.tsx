@@ -119,7 +119,7 @@ export function FiscalStatus({ data, loading }: FiscalStatusProps) {
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Estimation sur le CA encaissé du trimestre (~22%)
+              Estimation sur le CA encaissé du trimestre (~25,6% BNC 2026)
             </p>
           </div>
 
